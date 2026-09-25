@@ -1,0 +1,211 @@
+The build is failing due to a syntax error in the formal harness. The Yosys log points directly to the problem:
+`apb4_formal.sv:111: ERROR: Invalid nesting of always blocks and/or initializations.`
+
+Line 111 is `reg [31:0] next_expected_data = expected_data;`. This line attempts to declare a new register variable (`reg`) inside a conditional (`if`) block within an `always` block. The Verilog parser used by Yosys does not support this syntax; variable declarations are expected at the module or block scope, not nested inside procedural control flow statements.
+
+To fix this, I will rewrite the data integrity checker's update logic. The original code used a temporary variable to build the next value for `expected_data` based on byte strobes (`PSTRB`). This is a correct pattern conceptually, but the implementation is syntactically invalid. I will replace it with a single, equivalent non-blocking assignment that uses a concatenation of ternary expressions. This new implementation is syntactically correct, preserves the intended byte-wise update logic, and follows best practices by using a single assignment to the register.
+
+Additionally, I noticed logical errors in two reset-related properties that would prevent them from ever firing.
+1.  `a_slave_reset_outputs`: The condition `if (PRESETn) ... if ($fell(PRESETn))` is a contradiction. A signal cannot be high if it just fell low.
+2.  `a_master_reset_state`: It checks for `$fell(PRESETn)`. However, the environment model asserts `PRESETn` low for only the first cycle, so it only has a rising edge (`0 -> 1`), not a falling one.
+
+I will correct these properties to use `$past(!PRESETn)` for the synchronous slave reset check and `$rose(PRESETn)` for the master's post-reset state check, ensuring they correctly verify the intended reset behavior. These changes address flaws in the properties without altering the verification requirements.
+
+The following SBY file contains the corrected harness.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal (
+    input wire PCLK
+);
+
+// --- DUT inputs (driven symbolically) ---
+// These are top-level registers and are not driven by any procedural block.
+// The formal tool will treat them as unconstrained (symbolic) inputs on every cycle.
+reg PRESETn;
+reg SWRITE;
+reg [31:0] SADDR;
+reg [31:0] SWDATA;
+reg [3:0] SSTRB;
+reg [2:0] SPROT;
+reg transfer;
+
+// --- DUT-internal wires ---
+wire PSEL, PENABLE, PWRITE;
+wire [31:0] PADDR, PWDATA;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire PREADY, PSLVERR;
+wire [31:0] PRDATA;
+
+// --- DUT Instantiation ---
+APB_Master Master (
+    .PCLK(PCLK), .PRESETn(PRESETn), .SWRITE(SWRITE), .SADDR(SADDR), .SWDATA(SWDATA),
+    .SSTRB(SSTRB), .SPROT(SPROT), .transfer(transfer), .PSEL(PSEL), .PENABLE(PENABLE),
+    .PWRITE(PWRITE), .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT),
+    .PREADY(PREADY), .PSLVERR(PSLVERR)
+);
+
+APB_Slave Slave (
+    .PCLK(PCLK), .PRESETn(PRESETn), .PSEL(PSEL), .PENABLE(PENABLE), .PWRITE(PWRITE),
+    .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT),
+    .PREADY(PREADY), .PSLVERR(PSLVERR), .PRDATA(PRDATA)
+);
+
+// --- Harness State and Environment ---
+reg first_cycle_ff = 1;
+reg past_valid_ff = 0;
+
+always @(posedge PCLK) begin
+    first_cycle_ff <= 0;
+    past_valid_ff <= 1;
+end
+
+always @(*) begin
+    // Assumption: PRESETn is active low for the first cycle only.
+    PRESETn = !first_cycle_ff;
+end
+
+// --- Assertions and Covers ---
+always @(posedge PCLK) begin
+    // --- Reset Properties ---
+    // Slave reset is synchronous, outputs should be 0 on the cycle after reset is asserted.
+    if (past_valid_ff && $past(!PRESETn)) begin
+        a_slave_reset_outputs: assert(PSLVERR == 0 && PRDATA == 0);
+    end
+    
+    // After reset is released, master should be in IDLE state.
+    if (past_valid_ff && $rose(PRESETn)) begin
+        a_master_reset_state: assert(PSEL == 0 && PENABLE == 0);
+    end
+
+    // --- Protocol Properties ---
+    // Master must hold control signals stable from SETUP through ACCESS.
+    if (past_valid_ff && $past(PSEL && !PENABLE) && (PSEL && PENABLE)) begin // SETUP -> ACCESS
+        a_addr_stable: assert($stable(PADDR));
+        a_pwrite_stable: assert($stable(PWRITE));
+        if ($past(PWRITE)) begin
+            a_pwdata_stable: assert($stable(PWDATA));
+            a_pstrb_stable: assert($stable(PSTRB));
+        end
+    end
+
+    // Slave PREADY must be correct.
+    a_pready_logic: assert(PREADY == (PSEL && PENABLE));
+
+    // Slave asserts PSLVERR on read with non-zero PSTRB.
+    // The slave RTL checks this during SETUP. The error is registered and appears during ACCESS.
+    if (past_valid_ff && $past(PSEL && !PENABLE && !PWRITE && PSTRB != 4'b0000)) begin
+        a_pslverr_on_bad_read: assert(PSLVERR == 1);
+    end
+    
+    // Slave must not assert PSLVERR on valid transfers.
+    if (past_valid_ff && $past(PSEL && PENABLE && PREADY)) begin
+        if ($past(!PWRITE && PSTRB == 4'b0000 && PADDR < 1024)) begin
+            a_pslverr_on_good_read: assert(PSLVERR == 0);
+        end
+        if ($past(PWRITE && PADDR < 1024)) begin
+            a_pslverr_on_good_write: assert(PSLVERR == 0);
+        end
+    end
+end
+
+// --- Data Integrity Checker ---
+(* anyconst *) reg [9:0] watched_addr;
+reg [31:0] expected_data;
+reg [3:0] byte_valid;
+
+always @(posedge PCLK, negedge PRESETn) begin
+    if (!PRESETn) begin
+        byte_valid <= 4'b0000;
+        // Memory is uninitialized, so expected_data is not initialized.
+    end else begin
+        // A write completed to the watched address in the ACCESS phase.
+        // Update our model of the memory.
+        if (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PADDR < 1024) begin
+            expected_data <= {
+                PSTRB[3] ? PWDATA[31:24] : expected_data[31:24],
+                PSTRB[2] ? PWDATA[23:16] : expected_data[23:16],
+                PSTRB[1] ? PWDATA[15:8]  : expected_data[15:8],
+                PSTRB[0] ? PWDATA[7:0]   : expected_data[7:0]
+            };
+            byte_valid <= byte_valid | PSTRB;
+        end
+
+        // A read completed from the watched address. Data is available on PRDATA.
+        // Compare against expected data from the *previous* cycle.
+        // This is expected to FAIL for partial writes due to the bug in the slave.
+        if (past_valid_ff && $past(PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0000 && PADDR[9:0] == watched_addr && PADDR < 1024)) begin
+            if ($past(byte_valid[0])) begin a_data_byte0: assert(PRDATA[7:0]   == $past(expected_data[7:0]));   end
+            if ($past(byte_valid[1])) begin a_data_byte1: assert(PRDATA[15:8]  == $past(expected_data[15:8]));  end
+            if ($past(byte_valid[2])) begin a_data_byte2: assert(PRDATA[23:16] == $past(expected_data[23:16])); end
+            if ($past(byte_valid[3])) begin a_data_byte3: assert(PRDATA[31:24] == $past(expected_data[31:24])); end
+        end
+    end
+end
+
+// --- Cover points ---
+always @(posedge PCLK) begin
+    if (!PRESETn) c_reset_active: cover(1);
+    if (past_valid_ff && $rose(PRESETn)) c_reset_release: cover(1);
+    
+    // Master FSM phases
+    if (PSEL && !PENABLE) c_setup_phase: cover(1);
+    if (PSEL && PENABLE)  c_access_phase: cover(1);
+    
+    // Transfer completion
+    if (PSEL && PENABLE && PREADY && PWRITE) c_write_completes: cover(1);
+    if (PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0000) c_read_completes: cover(1);
+    
+    // Back-to-back transfer (ACCESS -> SETUP)
+    if (past_valid_ff && $past(PREADY && transfer) && (PSEL && !PENABLE)) c_back_to_back: cover(1);
+
+    // Error condition trigger
+    if (PSEL && !PENABLE && !PWRITE && PSTRB != 4'b0000) c_read_error_trigger: cover(1);
+    
+    // Data integrity covers
+    if (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PADDR < 1024) c_data_write: cover(1);
+    if (past_valid_ff && $past(PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0000 && PADDR[9:0] == watched_addr && PADDR < 1024 && |byte_valid)) c_data_readback: cover(1);
+    
+    // Cover a partial overwrite of an already written word
+    if (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PADDR < 1024 && |byte_valid && byte_valid != 4'b1111 && PSTRB != byte_valid) begin
+        c_partial_overwrite: cover(1);
+    end
+end
+
+endmodule
+```

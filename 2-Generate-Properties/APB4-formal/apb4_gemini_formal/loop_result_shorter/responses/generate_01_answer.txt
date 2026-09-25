@@ -1,0 +1,189 @@
+This analysis identifies critical bugs in the APB slave's byte-strobe handling, which violates the design brief's requirement for byte preservation.
+
+### 1. RTL Analysis
+
+*   **APB_Master:** The master implements a standard IDLE-SETUP-ACCESS state machine. It initiates a transfer based on the `transfer` input and correctly drives the APB signals during the SETUP phase. However, in the ACCESS phase, it only drives `PSEL` and `PENABLE`. Other signals like `PADDR` and `PWRITE` are not explicitly driven, relying on implicit latches from the `always @(*)` block to hold their values from the SETUP phase. While this happens to work, it is poor and potentially fragile RTL design.
+*   **APB_Slave:** The slave logic contains several major deviations from the design brief and standard APB behavior:
+    1.  **Faulty Byte-Strobe Logic:** The slave's write logic, implemented with a `case (PSTRB)` statement, is fundamentally broken. Instead of preserving unselected bytes, it either zeroes them out or sign-extends the written byte into the unselected byte lanes. For example, a write with `PSTRB=4'b0010` (byte 1) incorrectly zeroes out byte 0. This directly violates the requirement: "PSTRB selects bytes to update; unselected bytes must be preserved."
+    2.  **`PSTRB=0` Bug:** A write with `PSTRB=4'b0000` should be a no-op, preserving the entire word. The slave's `default` case, which handles `PSTRB=0`, incorrectly writes `32'h00000000` to the memory location, erasing its previous contents.
+    3.  **SETUP Phase Writes:** The slave's clocked process for reads/writes triggers on `if (PSEL)`, not `if (PSEL && PENABLE)`. This means it will perform a write at the end of the master's SETUP phase, in addition to the expected write during the ACCESS phase. This results in a double-write for every transaction.
+*   **Reset Behavior:** The master and slave correctly reset their core state logic. The slave's memory is not reset, and `PRDATA` is cleared, matching the brief.
+
+### 2. Proposed Property: Write Data Integrity
+
+The first property will verify the fundamental requirement of data integrity during writes, focusing on correct byte preservation as specified in the design brief. This property will immediately expose the faulty `PSTRB` logic in the slave.
+
+*   **Requirement:** When a write occurs, only the byte lanes selected by `PSTRB` should be updated in the slave's memory. All other byte lanes must be preserved. A write with `PSTRB=0` should preserve all bytes.
+*   **Environment Assumption (Requester Contract):**
+    *   The requester will only assert `transfer` when `PRESETn` is high.
+    *   For any transfer, the address `SADDR` will be within the valid range of `0` to `1023`.
+    *   For a read transfer (`SWRITE=0`), the byte strobes `SSTRB` will be `4'b0000`.
+*   **Checker and Assertion (`a_data_integrity`):**
+    1.  An independent "shadow" register (`expected_data`) will model the correct contents of a single, randomly chosen memory location (`watched_addr`).
+    2.  When a valid APB write completes (`PSEL && PENABLE && PWRITE && PREADY`) at the `watched_addr`, the checker will update its `expected_data` register according to `PSTRB` and `PWDATA`, correctly preserving the unselected bytes.
+    3.  When a subsequent valid read (`PSEL && PENABLE && !PWRITE && PREADY && PSTRB==0`) from `watched_addr` completes, an assertion will verify that the slave's `PRDATA` matches the `expected_data` from the shadow model.
+    4.  This single property is sufficient to detect all identified byte-strobe bugs, including the incorrect handling of `PSTRB=0`.
+*   **Cover (`c_read_after_write`):** A cover property will ensure that the test trace includes a read from the `watched_addr` after at least one write has occurred, confirming that the assertion's trigger condition is reachable.
+
+### 3. Generated SBY File
+
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 10
+--
+cover:
+mode cover
+depth 10
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(input wire PCLK);
+  // --- External System / Requester Driver ---
+  (* anyseq *) reg transfer, SWRITE;
+  (* anyseq *) reg [31:0] SADDR, SWDATA;
+  (* anyseq *) reg [3:0] SSTRB;
+  (* anyseq *) reg [2:0] SPROT;
+
+  // --- Reset and History Generation ---
+  reg first_cycle = 1'b1;
+  reg past_valid = 1'b0;
+  reg past_PRESETn = 1'b0;
+  wire PRESETn = !first_cycle;
+
+  always @(posedge PCLK) begin
+    first_cycle <= 1'b0;
+    past_valid <= 1'b1;
+    past_PRESETn <= PRESETn;
+  end
+
+  // --- DUT Connections ---
+  wire PSEL, PENABLE, PWRITE;
+  wire [31:0] PADDR, PWDATA, PRDATA;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire PREADY, PSLVERR;
+
+  APB_Master Master (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .SWRITE(SWRITE),
+      .SADDR(SADDR),
+      .SWDATA(SWDATA),
+      .SSTRB(SSTRB),
+      .SPROT(SPROT),
+      .transfer(transfer),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR)
+  );
+
+  APB_Slave Slave (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR),
+      .PRDATA(PRDATA)
+  );
+
+  // --- Requester Contract (Assumptions) ---
+  always @(posedge PCLK) begin
+    // Assume valid addresses are used for transfers after reset.
+    if (PRESETn && transfer) begin
+      assume(SADDR < 32'd1024);
+    end
+    // Assume legal reads use PSTRB=0, as per the design brief.
+    if (!SWRITE) begin
+        assume(SSTRB == 4'b0);
+    end
+  end
+
+  // --- Data Integrity Property ---
+  (* anyconst *) reg [31:0] watched_addr;
+  initial assume(watched_addr[31:10] == 22'b0); // Constrain to 0..1023
+
+  reg [31:0] expected_data;
+  reg        known_data;
+
+  wire is_access = PSEL && PENABLE;
+  wire write_complete = is_access && PWRITE && PREADY;
+  wire read_complete  = is_access && !PWRITE && PREADY;
+  wire at_watched_addr = (PADDR == watched_addr);
+
+  always @(posedge PCLK) begin
+    if (!PRESETn) begin
+      known_data <= 1'b0;
+    end else begin
+      // Shadow model: Update on completed write to watched_addr
+      if (write_complete && at_watched_addr) begin
+        if (PSTRB[0]) expected_data[7:0]   <= PWDATA[7:0];
+        if (PSTRB[1]) expected_data[15:8]  <= PWDATA[15:8];
+        if (PSTRB[2]) expected_data[23:16] <= PWDATA[23:16];
+        if (PSTRB[3]) expected_data[31:24] <= PWDATA[31:24];
+        known_data <= 1'b1;
+      end
+
+      // Assertion: Check on completed read from a known address
+      if (past_valid && $past(read_complete && at_watched_addr && known_data)) begin
+        // Requirement: Data read from a location must match the data last
+        // written, respecting byte strobes.
+        // A legal read must have PSTRB=0, which is handled by an assumption.
+        a_data_integrity: assert(PRDATA == $past(expected_data));
+      end
+    end
+  end
+
+  // --- Covers ---
+  always @(posedge PCLK) begin
+    if (past_valid) begin
+        // Cover reset release to ensure checks can run.
+        if (!past_PRESETn && PRESETn) begin
+            c_reset_release: cover(1);
+        end
+
+        // Cover the assertion trigger condition.
+        if (read_complete && at_watched_addr && known_data) begin
+            c_read_after_write: cover(1);
+        end
+    end
+  end
+
+endmodule
+```

@@ -1,0 +1,303 @@
+REVIEW_FIX
+The provided formal verification harness is mostly well-structured and contains meaningful properties that are poised to find the bugs in the RTL. The protocol, stability, error, and data integrity checks are sound. The data integrity scoreboard correctly models the intended byte-lane write behavior independently of the faulty slave RTL, which is crucial for bug detection.
+
+However, there is one error in an assertion's timing that needs correction:
+
+1.  **Slave Reset Assertion Timing:** The property `a_reset_slave_outputs` checks the slave's registered outputs (`PRDATA`, `PSLVERR`) during the first cycle, when reset is asserted. Since the slave uses a synchronous reset, its registers are updated on the clock edge. The assertion, checking the value *before* the edge, will incorrectly fail. The check must be moved to the following clock cycle, after the reset values have propagated through the registers.
+
+I have corrected this by splitting the reset property block. The check for the master's combinatorial reset outputs remains on the first cycle, while the check for the slave's synchronous reset outputs is now correctly timed for the cycle *after* reset is asserted. This ensures the property accurately reflects the design's behavior and requirements. All other properties were reviewed and deemed correct.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+/*
+ * Formal verification harness for APB4 master/slave system.
+ *
+ * This harness includes properties to check:
+ * 1. Reset Behavior: Master and slave reset to a known state.
+ * 2. Protocol Sequencing: Master follows IDLE-SETUP-ACCESS states correctly.
+ * 3. Signal Stability: Address and control signals are stable during a transfer.
+ * 4. Error Handling: Slave correctly asserts PSLVERR on invalid reads (bad PSTRB)
+ *    and is checked for correct handling of out-of-range addresses (will fail).
+ * 5. Data Integrity: A read after a write returns the correct data. This check
+ *    uses a behavioral model of byte-strobed writes and will fail due to the
+ *    slave's buggy write implementation and aliased address corruption.
+ */
+module apb4_formal(input wire PCLK);
+
+    // DUT inputs from the environment/requester
+    (* anyseq *) reg SWRITE;
+    (* anyseq *) reg [31:0] SADDR, SWDATA;
+    (* anyseq *) reg [3:0] SSTRB;
+    (* anyseq *) reg [2:0] SPROT;
+    (* anyseq *) reg transfer;
+
+    // Reset generation
+    reg first_cycle = 1'b1;
+    wire PRESETn = !first_cycle;
+    reg past_valid = 1'b0;
+
+    always @(posedge PCLK) begin
+        first_cycle <= 1'b0;
+        past_valid <= 1'b1;
+    end
+
+    // DUT outputs and internal APB signals
+    wire PSEL, PENABLE, PWRITE;
+    wire [31:0] PADDR, PWDATA;
+    wire [3:0] PSTRB;
+    wire [2:0] PPROT;
+    wire PREADY, PSLVERR;
+    wire [31:0] PRDATA;
+
+    // DUT instantiation (Master and Slave are instantiated directly)
+    APB_Master master (
+        .PCLK(PCLK),
+        .PRESETn(PRESETn),
+        .SWRITE(SWRITE),
+        .SADDR(SADDR),
+        .SWDATA(SWDATA),
+        .SSTRB(SSTRB),
+        .SPROT(SPROT),
+        .transfer(transfer),
+        .PSEL(PSEL),
+        .PENABLE(PENABLE),
+        .PWRITE(PWRITE),
+        .PADDR(PADDR),
+        .PWDATA(PWDATA),
+        .PSTRB(PSTRB),
+        .PPROT(PPROT),
+        .PREADY(PREADY),
+        .PSLVERR(PSLVERR)
+    );
+
+    APB_Slave slave (
+        .PCLK(PCLK),
+        .PRESETn(PRESETn),
+        .PSEL(PSEL),
+        .PENABLE(PENABLE),
+        .PWRITE(PWRITE),
+        .PADDR(PADDR),
+        .PWDATA(PWDATA),
+        .PSTRB(PSTRB),
+        .PPROT(PPROT),
+        .PREADY(PREADY),
+        .PSLVERR(PSLVERR),
+        .PRDATA(PRDATA)
+    );
+
+    // Data integrity checker state
+    // A single address is watched to check write/read consistency.
+    (* anyconst *) reg [9:0] watched_addr;
+    reg [31:0] shadow_mem;
+    reg [3:0] shadow_valid_bytes;
+    reg read_access_to_watched_addr = 1'b0;
+    reg has_been_written_in_bounds = 1'b0;
+
+    initial begin
+        // Ensure watched_addr is within the valid slave range
+        assume(watched_addr < 1024);
+    end
+
+    // Scoreboard logic to track writes to the watched address
+    always @(posedge PCLK) begin
+        if (!PRESETn) begin
+            shadow_valid_bytes <= 4'b0;
+            has_been_written_in_bounds <= 1'b0;
+        end else begin
+            // Update shadow memory on a valid, in-bounds write during the SETUP phase.
+            // This models the correct, expected behavior, ignoring out-of-bounds writes.
+            if (PSEL && !PENABLE && PWRITE && (PADDR[9:0] == watched_addr) && (PADDR < 1024)) begin
+                has_been_written_in_bounds <= 1'b1;
+                if (PSTRB[0]) begin
+                    shadow_mem[7:0] <= PWDATA[7:0];
+                    shadow_valid_bytes[0] <= 1'b1;
+                end
+                if (PSTRB[1]) begin
+                    shadow_mem[15:8] <= PWDATA[15:8];
+                    shadow_valid_bytes[1] <= 1'b1;
+                end
+                if (PSTRB[2]) begin
+                    shadow_mem[23:16] <= PWDATA[23:16];
+                    shadow_valid_bytes[2] <= 1'b1;
+                end
+                if (PSTRB[3]) begin
+                    shadow_mem[31:24] <= PWDATA[31:24];
+                    shadow_valid_bytes[3] <= 1'b1;
+                end
+            end
+        end
+    end
+
+    // Properties for reset state
+    always @(posedge PCLK) begin
+        // Master has combinatorial reset outputs. Check them during the reset cycle.
+        if (first_cycle) begin
+            // a_reset_master_outputs: Master outputs must be zero during reset.
+            assert(PSEL == 1'b0);
+            assert(PENABLE == 1'b0);
+            assert(PWRITE == 1'b0);
+            assert(PADDR == 32'h0);
+            assert(PWDATA == 32'h0);
+            assert(PSTRB == 4'h0);
+            assert(PPROT == 3'h0);
+        end
+
+        // Slave has synchronous reset outputs. Check them on the cycle after reset is asserted.
+        if (past_valid && $past(!PRESETn)) begin
+            // a_reset_slave_outputs: Slave registered outputs must be zero after reset.
+            assert(PRDATA == 32'h0);
+            assert(PSLVERR == 1'b0);
+        end
+    end
+
+    // Properties (assumptions, assertions)
+    always @(posedge PCLK) begin
+        // Update state for delayed data integrity check.
+        if (!PRESETn) begin
+            read_access_to_watched_addr <= 1'b0;
+        end else begin
+            // Trigger is a valid read access to the watched address.
+            read_access_to_watched_addr <= (PSEL && PENABLE && !PWRITE && (PADDR[9:0] == watched_addr) && PSTRB == 4'b0000);
+        end
+
+        // Checks below are only valid after reset has been released
+        if (past_valid && $past(PRESETn)) begin
+            // --- Protocol Sequencing and Stability ---
+            // a_penable_after_psel: PENABLE should only be asserted in the cycle after PSEL is asserted.
+            if ($rose(PENABLE)) begin
+                assert($past(PSEL));
+            end
+
+            // a_penable_with_psel: PENABLE must not be high if PSEL is low.
+            assert(!(PENABLE && !PSEL));
+
+            // a_stable_addr_ctrl: Address and control must be stable from SETUP to ACCESS.
+            if ($past(PSEL && !PENABLE)) begin
+                assert($stable(PADDR));
+                assert($stable(PWRITE));
+                assert($stable(PPROT));
+                assert($stable(PSTRB));
+            end
+
+            // a_stable_wdata: Write data must be stable during a write transfer from SETUP to ACCESS.
+            if ($past(PSEL && !PENABLE && PWRITE)) begin
+                assert($stable(PWDATA));
+            end
+
+            // a_pready_no_wait: Slave must assert PREADY in ACCESS phase (no wait states).
+            assert(PREADY == (PSEL && PENABLE));
+
+            // --- Error Response ---
+            // a_slverr_on_bad_read_strobe: A read with PSTRB!=0 must cause a slave error.
+            if ($past(PSEL && !PENABLE && !PWRITE && PSTRB != 4'b0)) begin
+                assert(PSLVERR);
+            end
+
+            // a_no_slverr_on_good_write: A valid write should not cause a slave error.
+            if ($past(PSEL && !PENABLE && PWRITE && PADDR < 1024)) begin
+                assert(!PSLVERR);
+            end
+            
+            // a_slverr_on_bad_addr: An access to an out-of-bounds address should cause a slave error.
+            // This will FAIL, revealing a bug in the slave.
+            if ($past(PSEL && !PENABLE && PADDR >= 1024)) begin
+                assert(PSLVERR);
+            end
+
+            // --- Data Integrity ---
+            // On a valid read from watched_addr, check PRDATA on the next cycle, as it's a registered output.
+            // This will FAIL due to the slave's buggy write logic and/or aliased address corruption.
+            if ($past(read_access_to_watched_addr)) begin
+                // a_data_byte0: Check byte 0 if it has been written
+                if ($past(shadow_valid_bytes[0])) assert(PRDATA[7:0] == $past(shadow_mem[7:0]));
+                // a_data_byte1: Check byte 1 if it has been written
+                if ($past(shadow_valid_bytes[1])) assert(PRDATA[15:8] == $past(shadow_mem[15:8]));
+                // a_data_byte2: Check byte 2 if it has been written
+                if ($past(shadow_valid_bytes[2])) assert(PRDATA[23:16] == $past(shadow_mem[23:16]));
+                // a_data_byte3: Check byte 3 if it has been written
+                if ($past(shadow_valid_bytes[3])) assert(PRDATA[31:24] == $past(shadow_mem[31:24]));
+            end
+        end
+    end
+
+    // Cover Statements
+    always @(posedge PCLK) begin
+        // c_reset_asserted: Cover reset being asserted on the first cycle.
+        if (first_cycle) begin
+             cover(!PRESETn);
+        end
+        // c_reset_released: Cover reset being released after the first cycle.
+        if (past_valid && $past(!PRESETn)) begin
+            cover(PRESETn);
+        end
+        
+        // Cover properties after reset is released
+        if (past_valid && PRESETn) begin
+            // c_setup_phase: Cover a SETUP phase.
+            cover(PSEL && !PENABLE);
+            // c_access_phase: Cover an ACCESS phase.
+            cover(PSEL && PENABLE);
+            // c_write_completes: Cover a completed write.
+            cover(PSEL && PENABLE && PREADY && PWRITE);
+            // c_read_completes: Cover a completed read.
+            cover(PSEL && PENABLE && PREADY && !PWRITE);
+            // c_back_to_back: Cover a back-to-back transfer.
+            cover($past(PSEL && PENABLE && PREADY) && (PSEL && !PENABLE));
+
+            // c_bad_read_strobe_trigger: Cover trigger for bad read strobe error check.
+            cover(PSEL && !PENABLE && !PWRITE && PSTRB != 4'b0);
+            
+            // c_bad_addr_trigger: Cover trigger for bad address error check.
+            cover(PSEL && !PENABLE && PADDR >= 1024);
+
+            // c_aliased_write_trigger: Cover an out-of-bounds write to a previously written valid address.
+            cover((PSEL && !PENABLE && PWRITE && PADDR >= 1024 && PADDR[9:0] == watched_addr) && has_been_written_in_bounds);
+
+            // c_read_after_full_write: Cover reading a fully written word.
+            cover((PSEL && PENABLE && !PWRITE && (PADDR[9:0] == watched_addr)) && (&shadow_valid_bytes));
+
+            // c_read_after_partial_write: Cover reading after a partial write.
+            cover((PSEL && PENABLE && !PWRITE && (PADDR[9:0] == watched_addr)) && (|shadow_valid_bytes) && !(&shadow_valid_bytes));
+
+            // c_overwrite_byte: Cover a byte write after a full write.
+            cover((&shadow_valid_bytes) &&
+                  (PSEL && !PENABLE && PWRITE && (PADDR[9:0] == watched_addr) &&
+                   (PSTRB == 4'b0001 || PSTRB == 4'b0010 || PSTRB == 4'b0100 || PSTRB == 4'b1000)));
+        end
+    end
+endmodule
+```

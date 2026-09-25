@@ -1,0 +1,185 @@
+The Yosys build fails with `ERROR: Found continuous assignment in always/initial block!` at `apb4_formal.sv:98`. This error is caused by declaring `wire` signals inside an `always` block, which is illegal in SystemVerilog. Wires with continuous assignments must be declared in the module's declarative scope, not within a procedural block.
+
+The fix is to move the four `wire` declarations for `is_access`, `is_complete`, `is_write_complete`, and `is_read_complete` from inside the `always @(posedge PCLK)` block to the module scope. I have moved them to just before the `always` block begins. This resolves the syntax error and allows the build to proceed. No other changes were made.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(input wire PCLK);
+    // APB Interface Wires
+    wire PSEL, PENABLE, PWRITE;
+    wire [31:0] PADDR, PWDATA;
+    wire [3:0] PSTRB;
+    wire [2:0] PPROT;
+    wire PREADY, PSLVERR;
+    wire [31:0] PRDATA;
+
+    // Requester (Environment) Inputs
+    (* anyseq *) reg transfer, SWRITE;
+    (* anyseq *) reg [31:0] SADDR, SWDATA;
+    (* anyseq *) reg [3:0] SSTRB;
+    (* anyseq *) reg [2:0] SPROT;
+
+    // Reset and History Generation
+    reg first_cycle = 1'b1;
+    wire PRESETn = !first_cycle;
+    reg past_valid = 1'b0;
+
+    always @(posedge PCLK) begin
+        first_cycle <= 1'b0;
+        past_valid <= 1'b1;
+    end
+
+    // DUT Instantiation
+    APB_Master Master (
+        .PCLK(PCLK), .PRESETn(PRESETn), .SWRITE(SWRITE), .SADDR(SADDR),
+        .SWDATA(SWDATA), .SSTRB(SSTRB), .SPROT(SPROT), .transfer(transfer),
+        .PSEL(PSEL), .PENABLE(PENABLE), .PWRITE(PWRITE), .PADDR(PADDR),
+        .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT), .PREADY(PREADY),
+        .PSLVERR(PSLVERR)
+    );
+
+    APB_Slave Slave (
+        .PCLK(PCLK), .PRESETn(PRESETn), .PSEL(PSEL), .PENABLE(PENABLE),
+        .PWRITE(PWRITE), .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB),
+        .PPROT(PPROT), .PREADY(PREADY), .PSLVERR(PSLVERR), .PRDATA(PRDATA)
+    );
+
+    // --- Data Integrity Checker Model ---
+    (* anyconst *) reg [31:0] watched_addr;
+    initial assume(watched_addr < 1024);
+
+    reg [31:0] expected_data;
+    reg [3:0] byte_valid;
+
+    initial byte_valid = 4'b0;
+
+    // --- Data Integrity Logic ---
+    wire is_access  = PSEL && PENABLE;
+    wire is_complete = is_access && PREADY;
+    wire is_write_complete = is_complete && PWRITE;
+    wire is_read_complete  = is_complete && !PWRITE && PSTRB == 4'b0;
+
+    // --- Formal Properties and Covers ---
+    always @(posedge PCLK) begin
+        // --- Reset Logic for Checker ---
+        if (!PRESETn) begin
+            byte_valid <= 4'b0;
+        end
+
+        // --- Environment Assumptions ---
+        // A1: Assume valid address from requester when not in reset
+        if (PRESETn) begin
+            assume_a1_addr_range: assume(SADDR < 1024);
+        end
+
+        // --- Protocol Assertions and Covers ---
+        // C1: PSEL/PENABLE must be low during reset
+        if (!PRESETn) begin
+            assert_c1_reset_idle: assert(PSEL == 0 && PENABLE == 0);
+        end
+        
+        // --- Checks requiring past state (guarded by past_valid and PRESETn) ---
+        if (past_valid && $past(PRESETn)) begin
+            // C2: SETUP phase must be followed by ACCESS phase
+            if ($past(PSEL && !PENABLE)) begin
+                assert_c2_setup_to_access: assert(PSEL == 1 && PENABLE == 1);
+            end
+
+            // C3: Address and control signals must be stable from SETUP to ACCESS
+            if ((PSEL && PENABLE) && $past(PSEL && !PENABLE)) begin
+                assert_c3_stable_addr:   assert(PADDR   == $past(PADDR));
+                assert_c3_stable_pwrite: assert(PWRITE  == $past(PWRITE));
+                assert_c3_stable_pwdata: assert(PWDATA  == $past(PWDATA));
+                assert_c3_stable_pstrb:  assert(PSTRB   == $past(PSTRB));
+                assert_c3_stable_pprot:  assert(PPROT   == $past(PPROT));
+            end
+            
+            // C4/C5: PSLVERR response is registered, check one cycle after condition
+            if ($past(PSEL && !PWRITE)) begin
+                if ($past(PSTRB != 4'b0)) begin
+                    // C4: Invalid read must cause an error
+                    assert_c4_invalid_read_slverr: assert(PSLVERR == 1);
+                end else begin
+                    // C5: Valid read must not cause an error
+                    assert_c5_valid_read_no_slverr: assert(PSLVERR == 0);
+                end
+            end
+        end
+
+        if (PRESETn) begin
+            // Update checker model on completed write to watched_addr
+            if (is_write_complete && PADDR == watched_addr) begin
+                if (PSTRB[0]) expected_data[7:0]   <= PWDATA[7:0];
+                if (PSTRB[1]) expected_data[15:8]  <= PWDATA[15:8];
+                if (PSTRB[2]) expected_data[23:16] <= PWDATA[23:16];
+                if (PSTRB[3]) expected_data[31:24] <= PWDATA[31:24];
+                
+                if (PSTRB[0]) byte_valid[0] <= 1'b1;
+                if (PSTRB[1]) byte_valid[1] <= 1'b1;
+                if (PSTRB[2]) byte_valid[2] <= 1'b1;
+                if (PSTRB[3]) byte_valid[3] <= 1'b1;
+            end
+            
+            // C6: Read data integrity check for known bytes
+            if (is_read_complete && PADDR == watched_addr) begin
+                if (byte_valid[0]) assert_c6_read_byte0: assert(PRDATA[7:0]   == expected_data[7:0]);
+                if (byte_valid[1]) assert_c6_read_byte1: assert(PRDATA[15:8]  == expected_data[15:8]);
+                if (byte_valid[2]) assert_c6_read_byte2: assert(PRDATA[23:16] == expected_data[23:16]);
+                if (byte_valid[3]) assert_c6_read_byte3: assert(PRDATA[31:24] == expected_data[31:24]);
+            end
+        end
+        
+        // --- Cover Points ---
+        cover_cov1_reset_assert: cover(!PRESETn);
+        if (past_valid) begin
+            if ($past(!PRESETn) && PRESETn) cover_cov1_reset_release: cover(1);
+        end
+
+        cover_cov2_setup: cover(PSEL && !PENABLE);
+        cover_cov2_access: cover(PSEL && PENABLE);
+
+        if (is_write_complete && PSTRB == 4'b1111) cover_cov3_full_write: cover(1);
+        if (is_read_complete) cover_cov3_legal_read: cover(1);
+        if (past_valid && $past(is_complete) && (PSEL && !PENABLE)) cover_cov4_b2b: cover(1);
+        if (is_complete && !PWRITE && PSTRB != 4'b0) cover_cov5_invalid_read: cover(1);
+        if (is_read_complete && PADDR == watched_addr && |byte_valid) cover_cov6_read_known: cover(1);
+        if (is_write_complete && PADDR == watched_addr && PSTRB != 4'b1111 && PSTRB != 4'b0 && $past(byte_valid == 4'b1111))
+            cover_cov7_partial_overwrite: cover(1);
+        if (is_write_complete && PSTRB == 4'b0) cover_cov8_pstrb0_write: cover(1);
+    end
+endmodule
+```

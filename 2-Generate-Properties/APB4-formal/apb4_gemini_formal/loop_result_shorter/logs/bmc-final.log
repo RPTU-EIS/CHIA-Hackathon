@@ -1,0 +1,1914 @@
+SBY  8:19:44 [apb4_bmc] Removing directory '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/apb4_bmc'.
+SBY  8:19:44 [apb4_bmc] Writing '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/apb4_bmc/src/apb4_formal.sv'.
+SBY  8:19:44 [apb4_bmc] Copy '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/APB_Master.v' to '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/apb4_bmc/src/APB_Master.v'.
+SBY  8:19:44 [apb4_bmc] Copy '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/APB_Slave.v' to '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/apb4_bmc/src/APB_Slave.v'.
+SBY  8:19:44 [apb4_bmc] Copy '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/APB_Wrapper.v' to '/tmp/ray/session_2026-09-16_17-22-51_832242_3414195/runtime_resources/working_dir_files/_ray_pkg_b450153c93af2e96/apb4_gemini_formal/loop_work_shorter/apb4_bmc/src/APB_Wrapper.v'.
+SBY  8:19:44 [apb4_bmc] engine_0: smtbmc --keep-going
+SBY  8:19:44 [apb4_bmc] base: starting process "cd apb4_bmc/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PSEL' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:547:proc_dlatch$2374
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PENABLE' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:547:proc_dlatch$2407
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PWRITE' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2422
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PADDR' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2443
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PWDATA' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2458
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PSTRB' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2473
+SBY  8:19:45 [apb4_bmc] base: Warning: Latch inferred for signal `\APB_Master.\PPROT' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2488
+SBY  8:19:45 [apb4_bmc] base: finished (returncode=0)
+SBY  8:19:45 [apb4_bmc] prep: starting process "cd apb4_bmc/model; yosys -ql design_prep.log design_prep.ys"
+SBY  8:19:45 [apb4_bmc] prep: finished (returncode=0)
+SBY  8:19:45 [apb4_bmc] smt2: starting process "cd apb4_bmc/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY  8:19:45 [apb4_bmc] smt2: finished (returncode=0)
+SBY  8:19:45 [apb4_bmc] engine_0: starting process "cd apb4_bmc; yosys-smtbmc --presat --unroll --keep-going --noprogress -t 10  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2"
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Solver: yices
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 0..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 0..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 1..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 1..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 2..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 2..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 3..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 3..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 4..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 4..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 5..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 5..
+SBY  8:19:45 [apb4_bmc] engine_0: ##   0:00:00  Checking assumptions in step 6..
+SBY  8:19:46 [apb4_bmc] engine_0: ##   0:00:00  Checking assertions in step 6..
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  BMC failed!
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  Value for anyconst apb4_formal.watched_addr (apb4_formal.sv:71.29-71.41): 15
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  Assert failed in apb4_formal: a_data_byte3
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  Writing trace to VCD file: engine_0/trace0.vcd
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  Writing trace to Verilog testbench: engine_0/trace0_tb.v
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  Writing trace to constraints file: engine_0/trace0.smtc
+SBY  8:19:49 [apb4_bmc] engine_0: ##   0:00:04  Writing trace to Yosys witness file: engine_0/trace0.yw
+SBY  8:19:50 [apb4_bmc] engine_0: ##   0:00:04  Checking remaining assertions..
+SBY  8:19:50 [apb4_bmc] engine_0: ##   0:00:04  Checking assertions in step 6..
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Value for anyconst apb4_formal.watched_addr (apb4_formal.sv:71.29-71.41): 123
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Assert failed in apb4_formal: a_data_byte2
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Writing trace to VCD file: engine_0/trace1.vcd
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Writing trace to Verilog testbench: engine_0/trace1_tb.v
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Writing trace to constraints file: engine_0/trace1.smtc
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Writing trace to Yosys witness file: engine_0/trace1.yw
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Checking remaining assertions..
+SBY  8:20:13 [apb4_bmc] engine_0: ##   0:00:28  Checking assertions in step 6..
+SBY  8:20:16 [apb4_bmc] engine_0: ##   0:00:30  Checking assumptions in step 7..
+SBY  8:20:19 [apb4_bmc] engine_0: ##   0:00:34  Checking assertions in step 7..
+SBY  8:20:54 [apb4_bmc] engine_0: ##   0:01:08  Checking assumptions in step 8..
+SBY  8:21:07 [apb4_bmc] engine_0: ##   0:01:21  Checking assertions in step 8..
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:22  Value for anyconst apb4_formal.watched_addr (apb4_formal.sv:71.29-71.41): 607
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:22  Assert failed in apb4_formal: a_data_byte1
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:22  Assert failed in apb4_formal: a_data_byte2 [failed before]
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:22  Writing trace to VCD file: engine_0/trace2.vcd
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:23  Writing trace to Verilog testbench: engine_0/trace2_tb.v
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:23  Writing trace to constraints file: engine_0/trace2.smtc
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:23  Writing trace to Yosys witness file: engine_0/trace2.yw
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:23  Checking remaining assertions..
+SBY  8:21:08 [apb4_bmc] engine_0: ##   0:01:23  Checking assertions in step 8..
+SBY  8:22:08 [apb4_bmc] engine_0: ##   0:02:23  waiting for solver (1 minute)
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Value for anyconst apb4_formal.watched_addr (apb4_formal.sv:71.29-71.41): 96
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Assert failed in apb4_formal: a_data_byte0
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Writing trace to VCD file: engine_0/trace3.vcd
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Writing trace to Verilog testbench: engine_0/trace3_tb.v
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Writing trace to constraints file: engine_0/trace3.smtc
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Writing trace to Yosys witness file: engine_0/trace3.yw
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Checking remaining assertions..
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Checking assertions in step 8..
+SBY  8:22:28 [apb4_bmc] engine_0: ##   0:02:43  Checking assumptions in step 9..
+SBY  8:22:29 [apb4_bmc] engine_0: ##   0:02:43  Checking assertions in step 9..
+SBY  8:22:29 [apb4_bmc] engine_0: ##   0:02:43  Status: failed
+SBY  8:22:29 [apb4_bmc] engine_0: finished (returncode=1)
+SBY  8:22:29 [apb4_bmc] engine_0: Status returned by engine: FAIL
+SBY  8:22:29 [apb4_bmc] summary: Elapsed clock time [H:MM:SS (secs)]: 0:02:44 (164)
+SBY  8:22:29 [apb4_bmc] summary: Elapsed process time [H:MM:SS (secs)]: 0:02:44 (164)
+SBY  8:22:29 [apb4_bmc] summary: engine_0 (smtbmc --keep-going) returned FAIL
+SBY  8:22:29 [apb4_bmc] summary: counterexample trace: apb4_bmc/engine_0/trace0.vcd
+SBY  8:22:29 [apb4_bmc] summary:   failed assertion apb4_formal.a_data_byte3 at apb4_formal.sv:114.29-114.88 step 6
+SBY  8:22:29 [apb4_bmc] summary: counterexample trace: apb4_bmc/engine_0/trace1.vcd
+SBY  8:22:29 [apb4_bmc] summary:   failed assertion apb4_formal.a_data_byte2 at apb4_formal.sv:113.29-113.88 step 6
+SBY  8:22:29 [apb4_bmc] summary: counterexample trace: apb4_bmc/engine_0/trace2.vcd
+SBY  8:22:29 [apb4_bmc] summary:   failed assertion apb4_formal.a_data_byte1 at apb4_formal.sv:112.29-112.87 step 8
+SBY  8:22:29 [apb4_bmc] summary:   failed assertion apb4_formal.a_data_byte2 at apb4_formal.sv:113.29-113.88 step 8
+SBY  8:22:29 [apb4_bmc] summary: counterexample trace: apb4_bmc/engine_0/trace3.vcd
+SBY  8:22:29 [apb4_bmc] summary:   failed assertion apb4_formal.a_data_byte0 at apb4_formal.sv:111.29-111.86 step 8
+SBY  8:22:29 [apb4_bmc] DONE (FAIL, rc=2)
+SBY  8:22:29 The following tasks failed: ['bmc']
+
+=== model/design.log ===
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.68+130 (git sha1 dd83bbad2-dirty, Release, Clang /usr/bin/clang++ 21.1.8)
+
+-- Executing script file `../model/design.ys' --
+
+1. Executing Verilog-2005 frontend: APB_Master.v
+Parsing formal SystemVerilog input from `APB_Master.v' to AST representation.
+Generating RTLIL representation for module `\APB_Master'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: APB_Slave.v
+Parsing formal SystemVerilog input from `APB_Slave.v' to AST representation.
+Generating RTLIL representation for module `\APB_Slave'.
+Successfully finished Verilog frontend.
+
+3. Executing Verilog-2005 frontend: APB_Wrapper.v
+Parsing formal SystemVerilog input from `APB_Wrapper.v' to AST representation.
+Generating RTLIL representation for module `\APB_Wrapper'.
+Successfully finished Verilog frontend.
+
+4. Executing Verilog-2005 frontend: apb4_formal.sv
+Parsing formal SystemVerilog input from `apb4_formal.sv' to AST representation.
+Generating RTLIL representation for module `\apb4_formal'.
+Successfully finished Verilog frontend.
+
+5. Executing PREP pass.
+
+5.1. Executing HIERARCHY pass (managing design hierarchy).
+
+5.1.1. Analyzing design hierarchy..
+Top module:  \apb4_formal
+Used module:     \APB_Slave
+Used module:     \APB_Master
+
+5.1.2. Analyzing design hierarchy..
+Top module:  \apb4_formal
+Used module:     \APB_Slave
+Used module:     \APB_Master
+Removing unused module `\APB_Wrapper'.
+Removed 1 unused modules.
+Module apb4_formal directly or indirectly contains formal properties -> setting "keep" attribute.
+
+5.2. Executing PROC pass (convert processes to netlists).
+
+5.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+5.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$apb4_formal.sv:86$292 in module apb4_formal.
+Marked 5 switch rules as full_case in process $proc$APB_Slave.v:18$25 in module APB_Slave.
+Marked 2 switch rules as full_case in process $proc$APB_Master.v:59$7 in module APB_Master.
+Marked 4 switch rules as full_case in process $proc$APB_Master.v:37$3 in module APB_Master.
+Marked 1 switch rules as full_case in process $proc$APB_Master.v:28$1 in module APB_Master.
+Removed a total of 0 dead cases.
+
+5.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 2 redundant assignments.
+Promoted 66 assignments to connections.
+
+5.2.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `\apb4_formal.$proc$apb4_formal.sv:11$354'.
+  Set init value: \past_PRESETn = 1'0
+Found init rule in `\apb4_formal.$proc$apb4_formal.sv:10$353'.
+  Set init value: \past_valid = 1'0
+Found init rule in `\apb4_formal.$proc$apb4_formal.sv:9$352'.
+  Set init value: \first_cycle = 1'1
+
+5.2.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \PRESETn in `\APB_Master.$proc$APB_Master.v:28$1'.
+
+5.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~33 debug messages>
+
+5.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:72$355'.
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:11$354'.
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:10$353'.
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:9$352'.
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:130$318'.
+     1/7: \c_any_write_complete_EN
+     2/7: \c_illegal_read_access_EN
+     3/7: \c_read_after_write_EN
+     4/7: \c_zero_strobe_write_EN
+     5/7: \c_partial_write_EN
+     6/7: \c_full_write_EN
+     7/7: \c_reset_release_EN
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:103$296'.
+     1/6: \a_no_slverr_on_write_EN
+     2/6: \a_illegal_read_slverr_EN
+     3/6: \a_data_byte3_EN
+     4/6: \a_data_byte2_EN
+     5/6: \a_data_byte1_EN
+     6/6: \a_data_byte0_EN
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:86$292'.
+     1/5: $0\expected_data[31:0] [31:24]
+     2/5: $0\expected_data[31:0] [23:16]
+     3/5: $0\expected_data[31:0] [15:8]
+     4/5: $0\expected_data[31:0] [7:0]
+     5/5: $0\known_bytes[3:0]
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:63$278'.
+     1/1: $assume$apb4_formal.sv:66$280_EN
+Creating decoders for process `\apb4_formal.$proc$apb4_formal.sv:14$277'.
+Creating decoders for process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+     1/190: $4$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$217
+     2/190: $4$memwr$\Cache$APB_Slave.v:27$9_DATA[31:0]$216
+     3/190: $4$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$215
+     4/190: $4$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$261
+     5/190: $4$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$260
+     6/190: $4$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$259
+     7/190: $4$memwr$\Cache$APB_Slave.v:41$23_DATA[31:0]$258
+     8/190: $4$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$257
+     9/190: $4$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$256
+    10/190: $4$memwr$\Cache$APB_Slave.v:40$22_DATA[31:0]$255
+    11/190: $4$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$254
+    12/190: $4$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$253
+    13/190: $4$memwr$\Cache$APB_Slave.v:39$21_DATA[31:0]$252
+    14/190: $4$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$251
+    15/190: $4$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$250
+    16/190: $4$memwr$\Cache$APB_Slave.v:38$20_DATA[31:0]$249
+    17/190: $4$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$248
+    18/190: $4$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$247
+    19/190: $4$memwr$\Cache$APB_Slave.v:37$19_DATA[31:0]$246
+    20/190: $4$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$245
+    21/190: $4$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$244
+    22/190: $4$memwr$\Cache$APB_Slave.v:36$18_DATA[31:0]$243
+    23/190: $4$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$242
+    24/190: $4$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$241
+    25/190: $4$memwr$\Cache$APB_Slave.v:35$17_DATA[31:0]$240
+    26/190: $4$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$239
+    27/190: $4$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$238
+    28/190: $4$memwr$\Cache$APB_Slave.v:34$16_DATA[31:0]$237
+    29/190: $4$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$236
+    30/190: $4$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$235
+    31/190: $4$memwr$\Cache$APB_Slave.v:33$15_DATA[31:0]$234
+    32/190: $4$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$233
+    33/190: $4$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$232
+    34/190: $4$memwr$\Cache$APB_Slave.v:32$14_DATA[31:0]$231
+    35/190: $4$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$230
+    36/190: $4$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$229
+    37/190: $4$memwr$\Cache$APB_Slave.v:31$13_DATA[31:0]$228
+    38/190: $4$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$227
+    39/190: $4$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$226
+    40/190: $4$memwr$\Cache$APB_Slave.v:30$12_DATA[31:0]$225
+    41/190: $4$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$224
+    42/190: $4$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$223
+    43/190: $4$memwr$\Cache$APB_Slave.v:29$11_DATA[31:0]$222
+    44/190: $4$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$221
+    45/190: $4$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$220
+    46/190: $4$memwr$\Cache$APB_Slave.v:28$10_DATA[31:0]$219
+    47/190: $4$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$218
+    48/190: $3$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$214
+    49/190: $3$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$213
+    50/190: $3$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$212
+    51/190: $3$memwr$\Cache$APB_Slave.v:41$23_DATA[31:0]$211
+    52/190: $3$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$210
+    53/190: $3$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$209
+    54/190: $3$memwr$\Cache$APB_Slave.v:40$22_DATA[31:0]$208
+    55/190: $3$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$207
+    56/190: $3$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$206
+    57/190: $3$memwr$\Cache$APB_Slave.v:39$21_DATA[31:0]$205
+    58/190: $3$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$204
+    59/190: $3$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$203
+    60/190: $3$memwr$\Cache$APB_Slave.v:38$20_DATA[31:0]$202
+    61/190: $3$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$201
+    62/190: $3$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$200
+    63/190: $3$memwr$\Cache$APB_Slave.v:37$19_DATA[31:0]$199
+    64/190: $3$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$198
+    65/190: $3$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$197
+    66/190: $3$memwr$\Cache$APB_Slave.v:36$18_DATA[31:0]$196
+    67/190: $3$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$195
+    68/190: $3$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$194
+    69/190: $3$memwr$\Cache$APB_Slave.v:35$17_DATA[31:0]$193
+    70/190: $3$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$192
+    71/190: $3$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$191
+    72/190: $3$memwr$\Cache$APB_Slave.v:34$16_DATA[31:0]$190
+    73/190: $3$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$189
+    74/190: $3$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$188
+    75/190: $3$memwr$\Cache$APB_Slave.v:33$15_DATA[31:0]$187
+    76/190: $3$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$186
+    77/190: $3$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$185
+    78/190: $3$memwr$\Cache$APB_Slave.v:32$14_DATA[31:0]$184
+    79/190: $3$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$183
+    80/190: $3$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$182
+    81/190: $3$memwr$\Cache$APB_Slave.v:31$13_DATA[31:0]$181
+    82/190: $3$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$180
+    83/190: $3$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$179
+    84/190: $3$memwr$\Cache$APB_Slave.v:30$12_DATA[31:0]$178
+    85/190: $3$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$177
+    86/190: $3$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$176
+    87/190: $3$memwr$\Cache$APB_Slave.v:29$11_DATA[31:0]$175
+    88/190: $3$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$174
+    89/190: $3$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$173
+    90/190: $3$memwr$\Cache$APB_Slave.v:28$10_DATA[31:0]$172
+    91/190: $3$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$171
+    92/190: $3$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$170
+    93/190: $3$memwr$\Cache$APB_Slave.v:27$9_DATA[31:0]$169
+    94/190: $3$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$168
+    95/190: $2$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$167
+    96/190: $2$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$166
+    97/190: $2$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$165
+    98/190: $2$memwr$\Cache$APB_Slave.v:41$23_DATA[31:0]$164
+    99/190: $2$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$163
+   100/190: $2$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$162
+   101/190: $2$memwr$\Cache$APB_Slave.v:40$22_DATA[31:0]$161
+   102/190: $2$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$160
+   103/190: $2$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$159
+   104/190: $2$memwr$\Cache$APB_Slave.v:39$21_DATA[31:0]$158
+   105/190: $2$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$157
+   106/190: $2$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$156
+   107/190: $2$memwr$\Cache$APB_Slave.v:38$20_DATA[31:0]$155
+   108/190: $2$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$154
+   109/190: $2$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$153
+   110/190: $2$memwr$\Cache$APB_Slave.v:37$19_DATA[31:0]$152
+   111/190: $2$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$151
+   112/190: $2$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$150
+   113/190: $2$memwr$\Cache$APB_Slave.v:36$18_DATA[31:0]$149
+   114/190: $2$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$148
+   115/190: $2$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$147
+   116/190: $2$memwr$\Cache$APB_Slave.v:35$17_DATA[31:0]$146
+   117/190: $2$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$145
+   118/190: $2$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$144
+   119/190: $2$memwr$\Cache$APB_Slave.v:34$16_DATA[31:0]$143
+   120/190: $2$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$142
+   121/190: $2$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$141
+   122/190: $2$memwr$\Cache$APB_Slave.v:33$15_DATA[31:0]$140
+   123/190: $2$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$139
+   124/190: $2$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$138
+   125/190: $2$memwr$\Cache$APB_Slave.v:32$14_DATA[31:0]$137
+   126/190: $2$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$136
+   127/190: $2$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$135
+   128/190: $2$memwr$\Cache$APB_Slave.v:31$13_DATA[31:0]$134
+   129/190: $2$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$133
+   130/190: $2$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$132
+   131/190: $2$memwr$\Cache$APB_Slave.v:30$12_DATA[31:0]$131
+   132/190: $2$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$130
+   133/190: $2$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$129
+   134/190: $2$memwr$\Cache$APB_Slave.v:29$11_DATA[31:0]$128
+   135/190: $2$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$127
+   136/190: $2$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$126
+   137/190: $2$memwr$\Cache$APB_Slave.v:28$10_DATA[31:0]$125
+   138/190: $2$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$124
+   139/190: $2$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$123
+   140/190: $2$memwr$\Cache$APB_Slave.v:27$9_DATA[31:0]$122
+   141/190: $2$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$121
+   142/190: $1$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$120
+   143/190: $1$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$119
+   144/190: $1$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$118
+   145/190: $1$memwr$\Cache$APB_Slave.v:41$23_DATA[31:0]$117
+   146/190: $1$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$116
+   147/190: $1$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$115
+   148/190: $1$memwr$\Cache$APB_Slave.v:40$22_DATA[31:0]$114
+   149/190: $1$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$113
+   150/190: $1$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$112
+   151/190: $1$memwr$\Cache$APB_Slave.v:39$21_DATA[31:0]$111
+   152/190: $1$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$110
+   153/190: $1$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$109
+   154/190: $1$memwr$\Cache$APB_Slave.v:38$20_DATA[31:0]$108
+   155/190: $1$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$107
+   156/190: $1$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$106
+   157/190: $1$memwr$\Cache$APB_Slave.v:37$19_DATA[31:0]$105
+   158/190: $1$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$104
+   159/190: $1$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$103
+   160/190: $1$memwr$\Cache$APB_Slave.v:36$18_DATA[31:0]$102
+   161/190: $1$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$101
+   162/190: $1$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$100
+   163/190: $1$memwr$\Cache$APB_Slave.v:35$17_DATA[31:0]$99
+   164/190: $1$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$98
+   165/190: $1$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$97
+   166/190: $1$memwr$\Cache$APB_Slave.v:34$16_DATA[31:0]$96
+   167/190: $1$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$95
+   168/190: $1$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$94
+   169/190: $1$memwr$\Cache$APB_Slave.v:33$15_DATA[31:0]$93
+   170/190: $1$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$92
+   171/190: $1$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$91
+   172/190: $1$memwr$\Cache$APB_Slave.v:32$14_DATA[31:0]$90
+   173/190: $1$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$89
+   174/190: $1$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$88
+   175/190: $1$memwr$\Cache$APB_Slave.v:31$13_DATA[31:0]$87
+   176/190: $1$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$86
+   177/190: $1$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$85
+   178/190: $1$memwr$\Cache$APB_Slave.v:30$12_DATA[31:0]$84
+   179/190: $1$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$83
+   180/190: $1$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$82
+   181/190: $1$memwr$\Cache$APB_Slave.v:29$11_DATA[31:0]$81
+   182/190: $1$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$80
+   183/190: $1$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$79
+   184/190: $1$memwr$\Cache$APB_Slave.v:28$10_DATA[31:0]$78
+   185/190: $1$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$77
+   186/190: $1$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$76
+   187/190: $1$memwr$\Cache$APB_Slave.v:27$9_DATA[31:0]$75
+   188/190: $1$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$74
+   189/190: $0\PRDATA[31:0]
+   190/190: $0\PSLVERR[0:0]
+Creating decoders for process `\APB_Master.$proc$APB_Master.v:59$7'.
+     1/14: $2\PENABLE[0:0]
+     2/14: $2\PSEL[0:0]
+     3/14: $2\PPROT[2:0]
+     4/14: $2\PSTRB[3:0]
+     5/14: $2\PWDATA[31:0]
+     6/14: $2\PADDR[31:0]
+     7/14: $2\PWRITE[0:0]
+     8/14: $1\PPROT[2:0]
+     9/14: $1\PSTRB[3:0]
+    10/14: $1\PWDATA[31:0]
+    11/14: $1\PADDR[31:0]
+    12/14: $1\PWRITE[0:0]
+    13/14: $1\PENABLE[0:0]
+    14/14: $1\PSEL[0:0]
+Creating decoders for process `\APB_Master.$proc$APB_Master.v:37$3'.
+     1/4: $4\ns[1:0]
+     2/4: $3\ns[1:0]
+     3/4: $2\ns[1:0]
+     4/4: $1\ns[1:0]
+Creating decoders for process `\APB_Master.$proc$APB_Master.v:28$1'.
+     1/1: $0\cs[1:0]
+
+5.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+Warning: Latch inferred for signal `\APB_Master.\PSEL' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:547:proc_dlatch$2374
+Warning: Latch inferred for signal `\APB_Master.\PENABLE' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:547:proc_dlatch$2407
+Warning: Latch inferred for signal `\APB_Master.\PWRITE' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2422
+Warning: Latch inferred for signal `\APB_Master.\PADDR' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2443
+Warning: Latch inferred for signal `\APB_Master.\PWDATA' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2458
+Warning: Latch inferred for signal `\APB_Master.\PSTRB' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2473
+Warning: Latch inferred for signal `\APB_Master.\PPROT' from process `\APB_Master.$proc$APB_Master.v:59$7': $auto$proc_dlatch.cc:543:proc_dlatch$2488
+No latch inferred for signal `\APB_Master.\ns' from process `\APB_Master.$proc$APB_Master.v:37$3'.
+
+5.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\apb4_formal.$past$apb4_formal.sv:145$268$0' using process `\apb4_formal.$proc$apb4_formal.sv:130$318'.
+  created $dff cell `$procdff$2489' with positive edge clock.
+Creating register for signal `\apb4_formal.$past$apb4_formal.sv:150$269$0' using process `\apb4_formal.$proc$apb4_formal.sv:130$318'.
+  created $dff cell `$procdff$2490' with positive edge clock.
+Creating register for signal `\apb4_formal.$past$apb4_formal.sv:110$266$0' using process `\apb4_formal.$proc$apb4_formal.sv:103$296'.
+  created $dff cell `$procdff$2491' with positive edge clock.
+Creating register for signal `\apb4_formal.$past$apb4_formal.sv:118$267$0' using process `\apb4_formal.$proc$apb4_formal.sv:103$296'.
+  created $dff cell `$procdff$2492' with positive edge clock.
+Creating register for signal `\apb4_formal.\expected_data' using process `\apb4_formal.$proc$apb4_formal.sv:86$292'.
+  created $dff cell `$procdff$2493' with positive edge clock.
+Creating register for signal `\apb4_formal.\known_bytes' using process `\apb4_formal.$proc$apb4_formal.sv:86$292'.
+  created $dff cell `$procdff$2494' with positive edge clock.
+Creating register for signal `\apb4_formal.\first_cycle' using process `\apb4_formal.$proc$apb4_formal.sv:14$277'.
+  created $dff cell `$procdff$2495' with positive edge clock.
+Creating register for signal `\apb4_formal.\past_valid' using process `\apb4_formal.$proc$apb4_formal.sv:14$277'.
+  created $dff cell `$procdff$2496' with positive edge clock.
+Creating register for signal `\apb4_formal.\past_PRESETn' using process `\apb4_formal.$proc$apb4_formal.sv:14$277'.
+  created $dff cell `$procdff$2497' with positive edge clock.
+Creating register for signal `\APB_Slave.\PSLVERR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2498' with positive edge clock.
+Creating register for signal `\APB_Slave.\PRDATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2499' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:27$9_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2500' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:27$9_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2501' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:27$9_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2502' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:28$10_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2503' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:28$10_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2504' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:28$10_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2505' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:29$11_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2506' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:29$11_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2507' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:29$11_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2508' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:30$12_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2509' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:30$12_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2510' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:30$12_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2511' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:31$13_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2512' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:31$13_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2513' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:31$13_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2514' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:32$14_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2515' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:32$14_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2516' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:32$14_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2517' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:33$15_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2518' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:33$15_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2519' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:33$15_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2520' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:34$16_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2521' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:34$16_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2522' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:34$16_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2523' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:35$17_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2524' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:35$17_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2525' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:35$17_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2526' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:36$18_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2527' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:36$18_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2528' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:36$18_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2529' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:37$19_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2530' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:37$19_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2531' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:37$19_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2532' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:38$20_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2533' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:38$20_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2534' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:38$20_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2535' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:39$21_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2536' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:39$21_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2537' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:39$21_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2538' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:40$22_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2539' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:40$22_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2540' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:40$22_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2541' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:41$23_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2542' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:41$23_DATA' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2543' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:41$23_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2544' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:42$24_ADDR' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2545' with positive edge clock.
+Creating register for signal `\APB_Slave.$memwr$\Cache$APB_Slave.v:42$24_EN' using process `\APB_Slave.$proc$APB_Slave.v:18$25'.
+  created $dff cell `$procdff$2546' with positive edge clock.
+Creating register for signal `\APB_Master.\cs' using process `\APB_Master.$proc$APB_Master.v:28$1'.
+  created $adff cell `$procdff$2551' with positive edge clock and positive level reset.
+
+5.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+5.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:72$355'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:11$354'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:10$353'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:9$352'.
+Found and cleaned up 7 empty switches in `\apb4_formal.$proc$apb4_formal.sv:130$318'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:130$318'.
+Found and cleaned up 8 empty switches in `\apb4_formal.$proc$apb4_formal.sv:103$296'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:103$296'.
+Found and cleaned up 6 empty switches in `\apb4_formal.$proc$apb4_formal.sv:86$292'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:86$292'.
+Found and cleaned up 1 empty switch in `\apb4_formal.$proc$apb4_formal.sv:63$278'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:63$278'.
+Removing empty process `apb4_formal.$proc$apb4_formal.sv:14$277'.
+Found and cleaned up 5 empty switches in `\APB_Slave.$proc$APB_Slave.v:18$25'.
+Removing empty process `APB_Slave.$proc$APB_Slave.v:18$25'.
+Found and cleaned up 2 empty switches in `\APB_Master.$proc$APB_Master.v:59$7'.
+Removing empty process `APB_Master.$proc$APB_Master.v:59$7'.
+Found and cleaned up 4 empty switches in `\APB_Master.$proc$APB_Master.v:37$3'.
+Removing empty process `APB_Master.$proc$APB_Master.v:37$3'.
+Removing empty process `APB_Master.$proc$APB_Master.v:28$1'.
+Cleaned up 33 empty switches.
+
+5.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module apb4_formal.
+<suppressed ~14 debug messages>
+Optimizing module APB_Slave.
+<suppressed ~191 debug messages>
+Optimizing module APB_Master.
+<suppressed ~93 debug messages>
+
+5.3. Executing FUTURE pass.
+
+5.4. Executing OPT_EXPR pass (perform const folding).
+Optimizing module apb4_formal.
+Optimizing module APB_Slave.
+Optimizing module APB_Master.
+
+5.5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \apb4_formal..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \APB_Master..
+Removed 58 unused cells and 941 unused wires.
+<suppressed ~61 debug messages>
+
+5.6. Executing CHECK pass (checking for obvious problems).
+Checking module apb4_formal...
+Checking module APB_Slave...
+Checking module APB_Master...
+Found and reported 0 problems.
+
+5.7. Executing OPT pass (performing simple optimizations).
+
+5.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module apb4_formal.
+Optimizing module APB_Slave.
+Optimizing module APB_Master.
+
+5.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\apb4_formal'.
+Computing hashes of 140 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 130 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 127 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 125 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 124 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+<suppressed ~48 debug messages>
+Finding identical cells in module `\APB_Slave'.
+Computing hashes of 575 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+Computing hashes of 515 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+<suppressed ~180 debug messages>
+Finding identical cells in module `\APB_Master'.
+Computing hashes of 52 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Computing hashes of 38 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Computing hashes of 35 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Computing hashes of 34 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Computing hashes of 33 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Computing hashes of 32 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+<suppressed ~60 debug messages>
+Removed a total of 96 cells.
+
+5.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \apb4_formal..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \APB_Slave..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 2/2 on $mux $procmux$2075.
+    dead port 2/2 on $mux $procmux$2069.
+    dead port 2/2 on $mux $procmux$2063.
+    dead port 2/2 on $mux $procmux$2057.
+    dead port 2/2 on $mux $procmux$2051.
+    dead port 2/2 on $mux $procmux$2045.
+    dead port 2/2 on $mux $procmux$2039.
+    dead port 2/2 on $mux $procmux$2033.
+    dead port 2/2 on $mux $procmux$2027.
+    dead port 2/2 on $mux $procmux$2021.
+    dead port 2/2 on $mux $procmux$2015.
+    dead port 2/2 on $mux $procmux$2009.
+    dead port 2/2 on $mux $procmux$2003.
+    dead port 2/2 on $mux $procmux$1997.
+    dead port 2/2 on $mux $procmux$1991.
+    dead port 2/2 on $mux $procmux$1985.
+    dead port 2/2 on $mux $procmux$1979.
+    dead port 2/2 on $mux $procmux$1973.
+    dead port 2/2 on $mux $procmux$1967.
+    dead port 2/2 on $mux $procmux$1961.
+    dead port 2/2 on $mux $procmux$1955.
+    dead port 2/2 on $mux $procmux$1949.
+    dead port 2/2 on $mux $procmux$1943.
+    dead port 2/2 on $mux $procmux$1937.
+    dead port 2/2 on $mux $procmux$1931.
+    dead port 2/2 on $mux $procmux$1925.
+    dead port 2/2 on $mux $procmux$1919.
+    dead port 2/2 on $mux $procmux$1913.
+    dead port 2/2 on $mux $procmux$1907.
+    dead port 2/2 on $mux $procmux$1901.
+    dead port 2/2 on $mux $procmux$1895.
+    dead port 2/2 on $mux $procmux$1889.
+    dead port 2/2 on $mux $procmux$1883.
+    dead port 2/2 on $mux $procmux$1877.
+    dead port 2/2 on $mux $procmux$1871.
+    dead port 2/2 on $mux $procmux$1865.
+    dead port 2/2 on $mux $procmux$1859.
+    dead port 2/2 on $mux $procmux$1853.
+    dead port 2/2 on $mux $procmux$1847.
+    dead port 2/2 on $mux $procmux$1841.
+    dead port 2/2 on $mux $procmux$1835.
+    dead port 2/2 on $mux $procmux$1829.
+    dead port 2/2 on $mux $procmux$1823.
+    dead port 2/2 on $mux $procmux$1817.
+    dead port 2/2 on $mux $procmux$1811.
+    dead port 2/2 on $mux $procmux$1805.
+    dead port 2/2 on $mux $procmux$1799.
+    dead port 2/2 on $mux $procmux$1793.
+    dead port 2/2 on $mux $procmux$1790.
+    dead port 2/2 on $mux $procmux$1784.
+    dead port 2/2 on $mux $procmux$1781.
+    dead port 2/2 on $mux $procmux$1775.
+    dead port 2/2 on $mux $procmux$1772.
+    dead port 2/2 on $mux $procmux$1766.
+    dead port 2/2 on $mux $procmux$1763.
+    dead port 2/2 on $mux $procmux$1757.
+    dead port 2/2 on $mux $procmux$1754.
+    dead port 2/2 on $mux $procmux$1748.
+    dead port 2/2 on $mux $procmux$1745.
+    dead port 2/2 on $mux $procmux$1739.
+    dead port 2/2 on $mux $procmux$1736.
+    dead port 2/2 on $mux $procmux$1730.
+    dead port 2/2 on $mux $procmux$1727.
+    dead port 2/2 on $mux $procmux$1721.
+    dead port 2/2 on $mux $procmux$1718.
+    dead port 2/2 on $mux $procmux$1712.
+    dead port 2/2 on $mux $procmux$1709.
+    dead port 2/2 on $mux $procmux$1703.
+    dead port 2/2 on $mux $procmux$1700.
+    dead port 2/2 on $mux $procmux$1694.
+    dead port 2/2 on $mux $procmux$1691.
+    dead port 2/2 on $mux $procmux$1685.
+    dead port 2/2 on $mux $procmux$1682.
+    dead port 2/2 on $mux $procmux$1676.
+    dead port 2/2 on $mux $procmux$1673.
+    dead port 2/2 on $mux $procmux$1667.
+    dead port 2/2 on $mux $procmux$1664.
+    dead port 2/2 on $mux $procmux$1658.
+    dead port 2/2 on $mux $procmux$1655.
+    dead port 2/2 on $mux $procmux$1649.
+    dead port 2/2 on $mux $procmux$1646.
+    dead port 2/2 on $mux $procmux$1640.
+    dead port 2/2 on $mux $procmux$1637.
+    dead port 2/2 on $mux $procmux$1631.
+    dead port 2/2 on $mux $procmux$1628.
+    dead port 2/2 on $mux $procmux$1622.
+    dead port 2/2 on $mux $procmux$1619.
+    dead port 2/2 on $mux $procmux$1613.
+    dead port 2/2 on $mux $procmux$1610.
+    dead port 2/2 on $mux $procmux$1604.
+    dead port 2/2 on $mux $procmux$1601.
+    dead port 2/2 on $mux $procmux$1595.
+    dead port 2/2 on $mux $procmux$1592.
+    dead port 2/2 on $mux $procmux$1586.
+    dead port 2/2 on $mux $procmux$1583.
+    dead port 2/2 on $mux $procmux$1577.
+    dead port 2/2 on $mux $procmux$1574.
+    dead port 2/2 on $mux $procmux$1568.
+    dead port 2/2 on $mux $procmux$1565.
+    dead port 2/2 on $mux $procmux$1559.
+    dead port 2/2 on $mux $procmux$1556.
+    dead port 2/2 on $mux $procmux$1550.
+    dead port 2/2 on $mux $procmux$1547.
+    dead port 2/2 on $mux $procmux$1541.
+    dead port 2/2 on $mux $procmux$1538.
+    dead port 2/2 on $mux $procmux$1532.
+    dead port 2/2 on $mux $procmux$1529.
+    dead port 2/2 on $mux $procmux$1523.
+    dead port 2/2 on $mux $procmux$1520.
+    dead port 2/2 on $mux $procmux$1514.
+    dead port 2/2 on $mux $procmux$1511.
+    dead port 2/2 on $mux $procmux$1505.
+    dead port 2/2 on $mux $procmux$1502.
+    dead port 2/2 on $mux $procmux$1496.
+    dead port 2/2 on $mux $procmux$1493.
+    dead port 2/2 on $mux $procmux$1487.
+    dead port 2/2 on $mux $procmux$1484.
+    dead port 2/2 on $mux $procmux$1478.
+    dead port 2/2 on $mux $procmux$1475.
+    dead port 2/2 on $mux $procmux$1469.
+    dead port 2/2 on $mux $procmux$1466.
+    dead port 2/2 on $mux $procmux$1460.
+    dead port 2/2 on $mux $procmux$1457.
+    dead port 2/2 on $mux $procmux$1451.
+    dead port 2/2 on $mux $procmux$1448.
+    dead port 2/2 on $mux $procmux$1442.
+    dead port 2/2 on $mux $procmux$1439.
+    dead port 2/2 on $mux $procmux$1433.
+    dead port 2/2 on $mux $procmux$1430.
+    dead port 2/2 on $mux $procmux$1424.
+    dead port 2/2 on $mux $procmux$1421.
+    dead port 2/2 on $mux $procmux$1415.
+    dead port 2/2 on $mux $procmux$1412.
+    dead port 2/2 on $mux $procmux$1406.
+    dead port 2/2 on $mux $procmux$1403.
+    dead port 2/2 on $mux $procmux$1397.
+    dead port 2/2 on $mux $procmux$1394.
+    dead port 2/2 on $mux $procmux$1388.
+    dead port 2/2 on $mux $procmux$1385.
+    dead port 2/2 on $mux $procmux$1379.
+    dead port 2/2 on $mux $procmux$1376.
+    dead port 2/2 on $mux $procmux$1370.
+    dead port 2/2 on $mux $procmux$1367.
+    dead port 2/2 on $mux $procmux$1365.
+    dead port 2/2 on $mux $procmux$1345.
+    dead port 2/2 on $mux $procmux$1342.
+    dead port 2/2 on $mux $procmux$1340.
+    dead port 2/2 on $mux $procmux$1320.
+    dead port 2/2 on $mux $procmux$1317.
+    dead port 2/2 on $mux $procmux$1315.
+    dead port 2/2 on $mux $procmux$1295.
+    dead port 2/2 on $mux $procmux$1292.
+    dead port 2/2 on $mux $procmux$1290.
+    dead port 2/2 on $mux $procmux$1271.
+    dead port 2/2 on $mux $procmux$1268.
+    dead port 2/2 on $mux $procmux$1266.
+    dead port 2/2 on $mux $procmux$1247.
+    dead port 2/2 on $mux $procmux$1244.
+    dead port 2/2 on $mux $procmux$1242.
+    dead port 2/2 on $mux $procmux$1223.
+    dead port 2/2 on $mux $procmux$1220.
+    dead port 2/2 on $mux $procmux$1218.
+    dead port 2/2 on $mux $procmux$1200.
+    dead port 2/2 on $mux $procmux$1197.
+    dead port 2/2 on $mux $procmux$1195.
+    dead port 2/2 on $mux $procmux$1177.
+    dead port 2/2 on $mux $procmux$1174.
+    dead port 2/2 on $mux $procmux$1172.
+    dead port 2/2 on $mux $procmux$1154.
+    dead port 2/2 on $mux $procmux$1151.
+    dead port 2/2 on $mux $procmux$1149.
+    dead port 2/2 on $mux $procmux$1132.
+    dead port 2/2 on $mux $procmux$1129.
+    dead port 2/2 on $mux $procmux$1127.
+    dead port 2/2 on $mux $procmux$1110.
+    dead port 2/2 on $mux $procmux$1107.
+    dead port 2/2 on $mux $procmux$1105.
+    dead port 2/2 on $mux $procmux$1088.
+    dead port 2/2 on $mux $procmux$1085.
+    dead port 2/2 on $mux $procmux$1083.
+    dead port 2/2 on $mux $procmux$1067.
+    dead port 2/2 on $mux $procmux$1064.
+    dead port 2/2 on $mux $procmux$1062.
+    dead port 2/2 on $mux $procmux$1046.
+    dead port 2/2 on $mux $procmux$1043.
+    dead port 2/2 on $mux $procmux$1041.
+    dead port 2/2 on $mux $procmux$1025.
+    dead port 2/2 on $mux $procmux$1022.
+    dead port 2/2 on $mux $procmux$1020.
+    dead port 2/2 on $mux $procmux$1005.
+    dead port 2/2 on $mux $procmux$1002.
+    dead port 2/2 on $mux $procmux$1000.
+    dead port 2/2 on $mux $procmux$985.
+    dead port 2/2 on $mux $procmux$982.
+    dead port 2/2 on $mux $procmux$980.
+    dead port 2/2 on $mux $procmux$965.
+    dead port 2/2 on $mux $procmux$962.
+    dead port 2/2 on $mux $procmux$960.
+    dead port 2/2 on $mux $procmux$946.
+    dead port 2/2 on $mux $procmux$943.
+    dead port 2/2 on $mux $procmux$941.
+    dead port 2/2 on $mux $procmux$927.
+    dead port 2/2 on $mux $procmux$924.
+    dead port 2/2 on $mux $procmux$922.
+    dead port 2/2 on $mux $procmux$908.
+    dead port 2/2 on $mux $procmux$905.
+    dead port 2/2 on $mux $procmux$903.
+    dead port 2/2 on $mux $procmux$890.
+    dead port 2/2 on $mux $procmux$887.
+    dead port 2/2 on $mux $procmux$885.
+    dead port 2/2 on $mux $procmux$872.
+    dead port 2/2 on $mux $procmux$869.
+    dead port 2/2 on $mux $procmux$867.
+    dead port 2/2 on $mux $procmux$854.
+    dead port 2/2 on $mux $procmux$851.
+    dead port 2/2 on $mux $procmux$849.
+    dead port 2/2 on $mux $procmux$837.
+    dead port 2/2 on $mux $procmux$834.
+    dead port 2/2 on $mux $procmux$832.
+    dead port 2/2 on $mux $procmux$820.
+    dead port 2/2 on $mux $procmux$817.
+    dead port 2/2 on $mux $procmux$815.
+    dead port 2/2 on $mux $procmux$803.
+    dead port 2/2 on $mux $procmux$800.
+    dead port 2/2 on $mux $procmux$798.
+    dead port 2/2 on $mux $procmux$787.
+    dead port 2/2 on $mux $procmux$784.
+    dead port 2/2 on $mux $procmux$782.
+    dead port 2/2 on $mux $procmux$771.
+    dead port 2/2 on $mux $procmux$768.
+    dead port 2/2 on $mux $procmux$766.
+    dead port 2/2 on $mux $procmux$755.
+    dead port 2/2 on $mux $procmux$752.
+    dead port 2/2 on $mux $procmux$750.
+    dead port 2/2 on $mux $procmux$740.
+    dead port 2/2 on $mux $procmux$737.
+    dead port 2/2 on $mux $procmux$735.
+    dead port 2/2 on $mux $procmux$725.
+    dead port 2/2 on $mux $procmux$722.
+    dead port 2/2 on $mux $procmux$720.
+    dead port 2/2 on $mux $procmux$710.
+    dead port 2/2 on $mux $procmux$707.
+    dead port 2/2 on $mux $procmux$705.
+    dead port 2/2 on $mux $procmux$696.
+    dead port 2/2 on $mux $procmux$693.
+    dead port 2/2 on $mux $procmux$691.
+    dead port 2/2 on $mux $procmux$682.
+    dead port 2/2 on $mux $procmux$679.
+    dead port 2/2 on $mux $procmux$677.
+    dead port 2/2 on $mux $procmux$668.
+    dead port 2/2 on $mux $procmux$665.
+    dead port 2/2 on $mux $procmux$663.
+    dead port 2/2 on $mux $procmux$655.
+    dead port 2/2 on $mux $procmux$652.
+    dead port 2/2 on $mux $procmux$650.
+    dead port 2/2 on $mux $procmux$642.
+    dead port 2/2 on $mux $procmux$639.
+    dead port 2/2 on $mux $procmux$637.
+    dead port 2/2 on $mux $procmux$629.
+    dead port 2/2 on $mux $procmux$626.
+    dead port 2/2 on $mux $procmux$624.
+    dead port 2/2 on $mux $procmux$617.
+    dead port 2/2 on $mux $procmux$614.
+    dead port 2/2 on $mux $procmux$612.
+    dead port 2/2 on $mux $procmux$605.
+    dead port 2/2 on $mux $procmux$602.
+    dead port 2/2 on $mux $procmux$600.
+    dead port 2/2 on $mux $procmux$593.
+    dead port 2/2 on $mux $procmux$590.
+    dead port 2/2 on $mux $procmux$588.
+    dead port 2/2 on $mux $procmux$567.
+    dead port 2/2 on $mux $procmux$564.
+    dead port 2/2 on $mux $procmux$562.
+    dead port 2/2 on $mux $procmux$541.
+    dead port 2/2 on $mux $procmux$538.
+    dead port 2/2 on $mux $procmux$536.
+    dead port 2/2 on $mux $procmux$515.
+    dead port 2/2 on $mux $procmux$512.
+    dead port 2/2 on $mux $procmux$510.
+    dead port 2/2 on $mux $procmux$489.
+    dead port 2/2 on $mux $procmux$486.
+    dead port 2/2 on $mux $procmux$484.
+Running muxtree optimizer on module \APB_Master..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 2/2 on $mux $procmux$2335.
+    dead port 2/2 on $mux $procmux$2327.
+    dead port 2/2 on $mux $procmux$2321.
+    dead port 1/2 on $mux $procmux$2319.
+Removed 286 multiplexer ports.
+<suppressed ~614 debug messages>
+
+5.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \apb4_formal.
+  Optimizing cells in module \APB_Slave.
+    Consolidated identical input bits for $mux cell $procmux$1170:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$1170_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$1170_Y [0]
+      New connections: $procmux$1170_Y [31:1] = { $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] $procmux$1170_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1103:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$1103_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$1103_Y [0]
+      New connections: $procmux$1103_Y [31:1] = { $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] $procmux$1103_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1039:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$1039_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$1039_Y [0]
+      New connections: $procmux$1039_Y [31:1] = { $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] $procmux$1039_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$978:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$978_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$978_Y [0]
+      New connections: $procmux$978_Y [31:1] = { $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] $procmux$978_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$920:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$920_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$920_Y [0]
+      New connections: $procmux$920_Y [31:1] = { $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] $procmux$920_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$865:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$865_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$865_Y [0]
+      New connections: $procmux$865_Y [31:1] = { $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] $procmux$865_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$813:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$813_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$813_Y [0]
+      New connections: $procmux$813_Y [31:1] = { $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] $procmux$813_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$764:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$764_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$764_Y [0]
+      New connections: $procmux$764_Y [31:1] = { $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] $procmux$764_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$718:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$718_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$718_Y [0]
+      New connections: $procmux$718_Y [31:1] = { $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] $procmux$718_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$675:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$675_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$675_Y [0]
+      New connections: $procmux$675_Y [31:1] = { $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] $procmux$675_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$635:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$635_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$635_Y [0]
+      New connections: $procmux$635_Y [31:1] = { $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] $procmux$635_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1313:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$1313_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$1313_Y [0]
+      New connections: $procmux$1313_Y [31:1] = { $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] $procmux$1313_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$598:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$598_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$598_Y [0]
+      New connections: $procmux$598_Y [31:1] = { $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] $procmux$598_Y [0] }
+    New ctrl vector for $pmux cell $procmux$572: $auto$opt_reduce.cc:137:opt_pmux$2569
+    Consolidated identical input bits for $pmux cell $procmux$546:
+      Old ports: A=32'11111111111111111111111111111111, B=480'000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, Y=$procmux$546_Y
+      New ports: A=1'1, B=15'000000000000000, Y=$procmux$546_Y [0]
+      New connections: $procmux$546_Y [31:1] = { $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] $procmux$546_Y [0] }
+    New ctrl vector for $pmux cell $procmux$546: $auto$opt_reduce.cc:137:opt_pmux$2571
+    Consolidated identical input bits for $mux cell $procmux$1240:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$1240_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$1240_Y [0]
+      New connections: $procmux$1240_Y [31:1] = { $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] $procmux$1240_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$482:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$procmux$482_Y
+      New ports: A=1'0, B=1'1, Y=$procmux$482_Y [0]
+      New connections: $procmux$482_Y [31:1] = { $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] $procmux$482_Y [0] }
+  Optimizing cells in module \APB_Slave.
+    Consolidated identical input bits for $mux cell $procmux$1608:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$235, Y=$procmux$1608_Y
+      New ports: A=1'0, B=$procmux$978_Y [0], Y=$procmux$1608_Y [0]
+      New connections: $procmux$1608_Y [31:1] = { $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] $procmux$1608_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1581:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$238, Y=$procmux$1581_Y
+      New ports: A=1'0, B=$procmux$920_Y [0], Y=$procmux$1581_Y [0]
+      New connections: $procmux$1581_Y [31:1] = { $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] $procmux$1581_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1554:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$241, Y=$procmux$1554_Y
+      New ports: A=1'0, B=$procmux$865_Y [0], Y=$procmux$1554_Y [0]
+      New connections: $procmux$1554_Y [31:1] = { $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] $procmux$1554_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1527:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$244, Y=$procmux$1527_Y
+      New ports: A=1'0, B=$procmux$813_Y [0], Y=$procmux$1527_Y [0]
+      New connections: $procmux$1527_Y [31:1] = { $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] $procmux$1527_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1500:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$247, Y=$procmux$1500_Y
+      New ports: A=1'0, B=$procmux$764_Y [0], Y=$procmux$1500_Y [0]
+      New connections: $procmux$1500_Y [31:1] = { $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] $procmux$1500_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1770:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$217, Y=$procmux$1770_Y
+      New ports: A=1'0, B=$procmux$482_Y [0], Y=$procmux$1770_Y [0]
+      New connections: $procmux$1770_Y [31:1] = { $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] $procmux$1770_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1473:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$250, Y=$procmux$1473_Y
+      New ports: A=1'0, B=$procmux$718_Y [0], Y=$procmux$1473_Y [0]
+      New connections: $procmux$1473_Y [31:1] = { $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] $procmux$1473_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1743:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$220, Y=$procmux$1743_Y
+      New ports: A=1'0, B=$procmux$1313_Y [0], Y=$procmux$1743_Y [0]
+      New connections: $procmux$1743_Y [31:1] = { $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] $procmux$1743_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1446:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$253, Y=$procmux$1446_Y
+      New ports: A=1'0, B=$procmux$675_Y [0], Y=$procmux$1446_Y [0]
+      New connections: $procmux$1446_Y [31:1] = { $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] $procmux$1446_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1419:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$256, Y=$procmux$1419_Y
+      New ports: A=1'0, B=$procmux$635_Y [0], Y=$procmux$1419_Y [0]
+      New connections: $procmux$1419_Y [31:1] = { $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] $procmux$1419_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1716:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$223, Y=$procmux$1716_Y
+      New ports: A=1'0, B=$procmux$1240_Y [0], Y=$procmux$1716_Y [0]
+      New connections: $procmux$1716_Y [31:1] = { $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] $procmux$1716_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1392:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$259, Y=$procmux$1392_Y
+      New ports: A=1'0, B=$procmux$598_Y [0], Y=$procmux$1392_Y [0]
+      New connections: $procmux$1392_Y [31:1] = { $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] $procmux$1392_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1374:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$261, Y=$procmux$1374_Y
+      New ports: A=1'0, B=$procmux$546_Y [0], Y=$procmux$1374_Y [0]
+      New connections: $procmux$1374_Y [31:1] = { $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] $procmux$1374_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1689:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$226, Y=$procmux$1689_Y
+      New ports: A=1'0, B=$procmux$1170_Y [0], Y=$procmux$1689_Y [0]
+      New connections: $procmux$1689_Y [31:1] = { $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] $procmux$1689_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1662:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$229, Y=$procmux$1662_Y
+      New ports: A=1'0, B=$procmux$1103_Y [0], Y=$procmux$1662_Y [0]
+      New connections: $procmux$1662_Y [31:1] = { $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] $procmux$1662_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1635:
+      Old ports: A=0, B=$4$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$232, Y=$procmux$1635_Y
+      New ports: A=1'0, B=$procmux$1039_Y [0], Y=$procmux$1635_Y [0]
+      New connections: $procmux$1635_Y [31:1] = { $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] $procmux$1635_Y [0] }
+  Optimizing cells in module \APB_Slave.
+    Consolidated identical input bits for $mux cell $procmux$1844:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$206, Y=$procmux$1844_Y
+      New ports: A=1'0, B=$procmux$1446_Y [0], Y=$procmux$1844_Y [0]
+      New connections: $procmux$1844_Y [31:1] = { $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] $procmux$1844_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1988:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$182, Y=$procmux$1988_Y
+      New ports: A=1'0, B=$procmux$1662_Y [0], Y=$procmux$1988_Y [0]
+      New connections: $procmux$1988_Y [31:1] = { $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] $procmux$1988_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1826:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$209, Y=$procmux$1826_Y
+      New ports: A=1'0, B=$procmux$1419_Y [0], Y=$procmux$1826_Y [0]
+      New connections: $procmux$1826_Y [31:1] = { $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] $procmux$1826_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1808:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$212, Y=$procmux$1808_Y
+      New ports: A=1'0, B=$procmux$1392_Y [0], Y=$procmux$1808_Y [0]
+      New connections: $procmux$1808_Y [31:1] = { $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] $procmux$1808_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$2060:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$170, Y=$procmux$2060_Y
+      New ports: A=1'0, B=$procmux$1770_Y [0], Y=$procmux$2060_Y [0]
+      New connections: $procmux$2060_Y [31:1] = { $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] $procmux$2060_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1796:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$214, Y=$procmux$1796_Y
+      New ports: A=1'0, B=$procmux$1374_Y [0], Y=$procmux$1796_Y [0]
+      New connections: $procmux$1796_Y [31:1] = { $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] $procmux$1796_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1970:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$185, Y=$procmux$1970_Y
+      New ports: A=1'0, B=$procmux$1635_Y [0], Y=$procmux$1970_Y [0]
+      New connections: $procmux$1970_Y [31:1] = { $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] $procmux$1970_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1952:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$188, Y=$procmux$1952_Y
+      New ports: A=1'0, B=$procmux$1608_Y [0], Y=$procmux$1952_Y [0]
+      New connections: $procmux$1952_Y [31:1] = { $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] $procmux$1952_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$2042:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$173, Y=$procmux$2042_Y
+      New ports: A=1'0, B=$procmux$1743_Y [0], Y=$procmux$2042_Y [0]
+      New connections: $procmux$2042_Y [31:1] = { $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] $procmux$2042_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1934:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$191, Y=$procmux$1934_Y
+      New ports: A=1'0, B=$procmux$1581_Y [0], Y=$procmux$1934_Y [0]
+      New connections: $procmux$1934_Y [31:1] = { $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] $procmux$1934_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1916:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$194, Y=$procmux$1916_Y
+      New ports: A=1'0, B=$procmux$1554_Y [0], Y=$procmux$1916_Y [0]
+      New connections: $procmux$1916_Y [31:1] = { $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] $procmux$1916_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$2024:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$176, Y=$procmux$2024_Y
+      New ports: A=1'0, B=$procmux$1716_Y [0], Y=$procmux$2024_Y [0]
+      New connections: $procmux$2024_Y [31:1] = { $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] $procmux$2024_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1898:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$197, Y=$procmux$1898_Y
+      New ports: A=1'0, B=$procmux$1527_Y [0], Y=$procmux$1898_Y [0]
+      New connections: $procmux$1898_Y [31:1] = { $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] $procmux$1898_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1880:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$200, Y=$procmux$1880_Y
+      New ports: A=1'0, B=$procmux$1500_Y [0], Y=$procmux$1880_Y [0]
+      New connections: $procmux$1880_Y [31:1] = { $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] $procmux$1880_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$2006:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$179, Y=$procmux$2006_Y
+      New ports: A=1'0, B=$procmux$1689_Y [0], Y=$procmux$2006_Y [0]
+      New connections: $procmux$2006_Y [31:1] = { $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] $procmux$2006_Y [0] }
+    Consolidated identical input bits for $mux cell $procmux$1862:
+      Old ports: A=0, B=$3$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$203, Y=$procmux$1862_Y
+      New ports: A=1'0, B=$procmux$1473_Y [0], Y=$procmux$1862_Y [0]
+      New connections: $procmux$1862_Y [31:1] = { $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] $procmux$1862_Y [0] }
+  Optimizing cells in module \APB_Slave.
+    Consolidated identical input bits for $mux cell $procmux$2102:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$159, Y=$0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64
+      New ports: A=1'0, B=$procmux$1844_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [31:1] = { $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] $0$memwr$\Cache$APB_Slave.v:39$21_EN[31:0]$64 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2093:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$162, Y=$0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67
+      New ports: A=1'0, B=$procmux$1826_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [31:1] = { $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] $0$memwr$\Cache$APB_Slave.v:40$22_EN[31:0]$67 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2084:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$165, Y=$0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70
+      New ports: A=1'0, B=$procmux$1808_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [31:1] = { $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] $0$memwr$\Cache$APB_Slave.v:41$23_EN[31:0]$70 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2210:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$123, Y=$0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28
+      New ports: A=1'0, B=$procmux$2060_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [31:1] = { $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] $0$memwr$\Cache$APB_Slave.v:27$9_EN[31:0]$28 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2078:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$167, Y=$0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72
+      New ports: A=1'0, B=$procmux$1796_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [31:1] = { $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] $0$memwr$\Cache$APB_Slave.v:42$24_EN[31:0]$72 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2201:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$126, Y=$0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31
+      New ports: A=1'0, B=$procmux$2042_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [31:1] = { $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] $0$memwr$\Cache$APB_Slave.v:28$10_EN[31:0]$31 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2192:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$129, Y=$0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34
+      New ports: A=1'0, B=$procmux$2024_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [31:1] = { $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] $0$memwr$\Cache$APB_Slave.v:29$11_EN[31:0]$34 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2183:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$132, Y=$0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37
+      New ports: A=1'0, B=$procmux$2006_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [31:1] = { $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] $0$memwr$\Cache$APB_Slave.v:30$12_EN[31:0]$37 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2174:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$135, Y=$0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40
+      New ports: A=1'0, B=$procmux$1988_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [31:1] = { $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] $0$memwr$\Cache$APB_Slave.v:31$13_EN[31:0]$40 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2165:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$138, Y=$0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43
+      New ports: A=1'0, B=$procmux$1970_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [31:1] = { $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] $0$memwr$\Cache$APB_Slave.v:32$14_EN[31:0]$43 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2156:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$141, Y=$0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46
+      New ports: A=1'0, B=$procmux$1952_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [31:1] = { $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] $0$memwr$\Cache$APB_Slave.v:33$15_EN[31:0]$46 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2147:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$144, Y=$0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49
+      New ports: A=1'0, B=$procmux$1934_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [31:1] = { $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] $0$memwr$\Cache$APB_Slave.v:34$16_EN[31:0]$49 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2138:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$147, Y=$0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52
+      New ports: A=1'0, B=$procmux$1916_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [31:1] = { $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] $0$memwr$\Cache$APB_Slave.v:35$17_EN[31:0]$52 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2129:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$150, Y=$0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55
+      New ports: A=1'0, B=$procmux$1898_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [31:1] = { $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] $0$memwr$\Cache$APB_Slave.v:36$18_EN[31:0]$55 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2120:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$153, Y=$0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58
+      New ports: A=1'0, B=$procmux$1880_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [31:1] = { $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] $0$memwr$\Cache$APB_Slave.v:37$19_EN[31:0]$58 [0] }
+    Consolidated identical input bits for $mux cell $procmux$2111:
+      Old ports: A=0, B=$2$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$156, Y=$0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61
+      New ports: A=1'0, B=$procmux$1862_Y [0], Y=$0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0]
+      New connections: $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [31:1] = { $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] $0$memwr$\Cache$APB_Slave.v:38$20_EN[31:0]$61 [0] }
+  Optimizing cells in module \APB_Slave.
+  Optimizing cells in module \APB_Master.
+    New ctrl vector for $pmux cell $procmux$2251: $auto$opt_reduce.cc:137:opt_pmux$2573
+    New ctrl vector for $pmux cell $procmux$2243: $procmux$2339_CMP
+  Optimizing cells in module \APB_Master.
+Performed a total of 68 changes.
+
+5.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\apb4_formal'.
+Computing hashes of 124 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 121 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 119 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Computing hashes of 117 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+<suppressed ~21 debug messages>
+Finding identical cells in module `\APB_Slave'.
+Computing hashes of 235 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+Computing hashes of 234 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+<suppressed ~3 debug messages>
+Finding identical cells in module `\APB_Master'.
+Computing hashes of 29 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Removed a total of 8 cells.
+
+5.7.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \apb4_formal..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \APB_Master..
+Removed 0 unused cells and 388 unused wires.
+<suppressed ~3 debug messages>
+
+5.7.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module apb4_formal.
+Optimizing module APB_Slave.
+Optimizing module APB_Master.
+
+5.7.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+5.7.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \apb4_formal..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \APB_Slave..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \APB_Master..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~322 debug messages>
+
+5.7.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \apb4_formal.
+  Optimizing cells in module \APB_Slave.
+  Optimizing cells in module \APB_Master.
+Performed a total of 0 changes.
+
+5.7.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\apb4_formal'.
+Computing hashes of 117 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Finding identical cells in module `\APB_Slave'.
+Computing hashes of 234 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+Finding identical cells in module `\APB_Master'.
+Computing hashes of 29 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Removed a total of 0 cells.
+
+5.7.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \apb4_formal..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \APB_Master..
+
+5.7.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module apb4_formal.
+Optimizing module APB_Slave.
+Optimizing module APB_Master.
+
+5.7.14. Finished fast OPT passes. (There is nothing left to do.)
+
+5.8. Executing WREDUCE pass (reducing word size of cells).
+Removed top 21 bits (of 32) from port B of cell apb4_formal.$lt$apb4_formal.sv:66$281 ($lt).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2556 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2557 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2558 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2559 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2560 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2561 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2562 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2563 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2564 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2565 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2566 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2552 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2553 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2554 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2555 (Cache).
+Removed top 22 address bits (of 32) from memory read port APB_Slave.$memrd$\Cache$APB_Slave.v:51$263 (Cache).
+Removed top 22 address bits (of 32) from memory init port APB_Slave.$auto$proc_memwr.cc:45:proc_memwr$2567 (Cache).
+Removed top 31 bits (of 32) from mux cell APB_Slave.$ternary$APB_Slave.v:57$265 ($mux).
+Removed top 3 bits (of 4) from port B of cell APB_Slave.$procmux$587_CMP0 ($eq).
+Removed top 1 bits (of 4) from port B of cell APB_Slave.$procmux$1019_CMP0 ($eq).
+Removed top 1 bits (of 4) from port B of cell APB_Slave.$procmux$1082_CMP0 ($eq).
+Removed top 1 bits (of 4) from port B of cell APB_Slave.$procmux$1148_CMP0 ($eq).
+Removed top 1 bits (of 4) from port B of cell APB_Slave.$procmux$1217_CMP0 ($eq).
+Removed top 2 bits (of 4) from port B of cell APB_Slave.$procmux$1289_CMP0 ($eq).
+Removed top 2 bits (of 4) from port B of cell APB_Slave.$procmux$1364_CMP0 ($eq).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2081 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2090 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2099 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2108 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2117 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2126 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2135 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2144 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2153 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2162 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2171 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2180 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2189 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2198 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2207 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2216 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1802 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1820 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1838 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1856 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1874 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1892 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1910 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1928 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1946 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1964 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1982 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2000 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2018 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2036 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2054 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$2072 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1383 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1410 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1437 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1464 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1491 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1518 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1545 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1572 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1599 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1626 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1653 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1680 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1707 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1734 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1761 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1788 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$534 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$572 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$622 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$661 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$703 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$748 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$796 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$847 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$901 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$958 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1018 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1081 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1147 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1216 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1288 ($mux).
+Removed top 22 bits (of 32) from mux cell APB_Slave.$procmux$1363 ($mux).
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$192.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$189.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$186.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$183.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$180.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$177.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$174.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$171.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$168.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$166.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$163.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$160.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$157.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$154.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$151.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$148.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$145.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$142.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$139.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$136.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$133.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$130.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$127.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$124.
+Removed top 22 bits (of 32) from wire APB_Slave.$2$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$121.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$260.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$257.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$254.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$251.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$248.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$245.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$242.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$239.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$236.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$233.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$230.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$71.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$68.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$65.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$62.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$59.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$56.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$53.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:35$17_ADDR[31:0]$50.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:34$16_ADDR[31:0]$47.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:33$15_ADDR[31:0]$44.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:32$14_ADDR[31:0]$41.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$38.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$35.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$32.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$29.
+Removed top 22 bits (of 32) from wire APB_Slave.$0$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$26.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:31$13_ADDR[31:0]$227.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:30$12_ADDR[31:0]$224.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:29$11_ADDR[31:0]$221.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:28$10_ADDR[31:0]$218.
+Removed top 22 bits (of 32) from wire APB_Slave.$4$memwr$\Cache$APB_Slave.v:27$9_ADDR[31:0]$215.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:42$24_ADDR[31:0]$213.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:41$23_ADDR[31:0]$210.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:40$22_ADDR[31:0]$207.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:39$21_ADDR[31:0]$204.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:38$20_ADDR[31:0]$201.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:37$19_ADDR[31:0]$198.
+Removed top 22 bits (of 32) from wire APB_Slave.$3$memwr$\Cache$APB_Slave.v:36$18_ADDR[31:0]$195.
+Removed top 1 bits (of 2) from mux cell APB_Master.$procmux$2333 ($mux).
+Removed top 1 bits (of 2) from port B of cell APB_Master.$procmux$2340_CMP0 ($eq).
+Removed top 1 bits (of 2) from wire APB_Master.$2\ns[1:0].
+
+5.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \apb4_formal..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \APB_Master..
+Removed 0 unused cells and 66 unused wires.
+<suppressed ~2 debug messages>
+
+5.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+5.11. Executing OPT pass (performing simple optimizations).
+
+5.11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module apb4_formal.
+Optimizing module APB_Slave.
+Optimizing module APB_Master.
+
+5.11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\apb4_formal'.
+Computing hashes of 117 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Finding identical cells in module `\APB_Slave'.
+Computing hashes of 218 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+Finding identical cells in module `\APB_Master'.
+Computing hashes of 29 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Removed a total of 0 cells.
+
+5.11.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \apb4_formal..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \APB_Master..
+
+5.11.4. Finished fast OPT passes.
+
+5.12. Executing SORT pass.
+
+5.13. Printing statistics.
+
+=== APB_Master ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       39 wires
+      177 wire bits
+       19 public wires
+      155 public wire bits
+       17 ports
+      151 port bits
+       29 cells
+        1   $adff
+        5   $adlatch
+        3   $and
+        2   $dlatch
+        2   $eq
+        2   $logic_and
+        2   $logic_not
+        7   $mux
+        3   $not
+        1   $pmux
+        1   $reduce_or
+
+=== APB_Slave ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      227 wires
+     4900 wire bits
+       12 public wires
+      110 public wire bits
+       12 ports
+      110 port bits
+      218 cells
+        2   $dff
+       15   $eq
+        1   $logic_and
+        1   $mem_v2
+      197   $mux
+        1   $reduce_bool
+        1   $reduce_or
+
+=== apb4_formal ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      110 wires
+      436 wire bits
+       42 public wires
+      272 public wire bits
+        1 ports
+        1 port bits
+      115 cells
+        1   $anyconst
+        6   $anyseq
+       15   $check
+        9   $dff
+        6   $eq
+       22   $logic_and
+        6   $logic_not
+        1   $lt
+       44   $mux
+        1   $ne
+        1   $not
+        1   $or
+        1   $reduce_bool
+        1   $reduce_or
+        2 submodules
+        1   APB_Master
+        1   APB_Slave
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+      362 apb4_formal
+       29 APB_Master
+      218 APB_Slave
+
+        +----------Count including submodules.
+        | 
+      376 wires
+     5513 wire bits
+       73 public wires
+      537 public wire bits
+       30 ports
+      262 port bits
+        - memories
+        - memory bits
+        - processes
+      362 cells
+        1   $adff
+        5   $adlatch
+        3   $and
+        1   $anyconst
+        6   $anyseq
+       15   $check
+       11   $dff
+        2   $dlatch
+       23   $eq
+       25   $logic_and
+        8   $logic_not
+        1   $lt
+        1   $mem_v2
+      248   $mux
+        1   $ne
+        4   $not
+        1   $or
+        1   $pmux
+        2   $reduce_bool
+        3   $reduce_or
+        2 submodules
+        1   APB_Master
+        1   APB_Slave
+
+5.14. Executing CHECK pass (checking for obvious problems).
+Checking module APB_Master...
+Checking module APB_Slave...
+Checking module apb4_formal...
+Found and reported 0 problems.
+
+6. Executing CHECK pass (checking for obvious problems).
+Checking module APB_Master...
+Checking module APB_Slave...
+Checking module apb4_formal...
+Found and reported 0 problems.
+
+7. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `apb4_formal'. Setting top module to apb4_formal.
+
+7.1. Analyzing design hierarchy..
+Top module:  \apb4_formal
+Used module:     \APB_Master
+Used module:     \APB_Slave
+
+7.2. Analyzing design hierarchy..
+Top module:  \apb4_formal
+Used module:     \APB_Master
+Used module:     \APB_Slave
+Removed 0 unused modules.
+Module apb4_formal directly or indirectly contains formal properties -> setting "keep" attribute.
+
+8. Executing jny backend.
+
+9. Executing RTLIL backend.
+Output filename: ../model/design.il
+
+Warnings: 7 unique messages, 7 total
+End of script. Logfile hash: ce549fab98, time: 0.33s, user: 0.33s, system: 0.01s, MEM: 29.84 MB peak
+Yosys 0.68+130 (git sha1 dd83bbad2-dirty, Release, Clang /usr/bin/clang++ 21.1.8)
+Time spent: 36% 1x proc_mux (0 sec), 12% 3x check (0 sec), ...
+
+=== model/design_prep.log ===
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.68+130 (git sha1 dd83bbad2-dirty, Release, Clang /usr/bin/clang++ 21.1.8)
+
+-- Executing script file `design_prep.ys' --
+
+1. Executing RTLIL frontend.
+Input filename: design.il
+
+2. Executing SCC pass (detecting logic loops).
+Found 0 SCCs in module APB_Master.
+Found 0 SCCs in module APB_Slave.
+Found 0 SCCs in module apb4_formal.
+Found 0 SCCs.
+
+3. Executing SIMPLEMAP pass (map simple cells to gate primitives).
+
+4. Executing MEMORY_NORDFF pass (extracting $dff cells from memories).
+
+5. Executing ASYNC2SYNC pass.
+Replacing APB_Master.$auto$proc_dlatch.cc:543:proc_dlatch$2422 ($adlatch): EN=$auto$rtlil.cc:3267:Not$2421, D=\SWRITE, Q=\PWRITE
+Replacing APB_Master.$auto$proc_dlatch.cc:543:proc_dlatch$2443 ($adlatch): EN=$auto$rtlil.cc:3267:Not$2421, D=\SADDR, Q=\PADDR
+Replacing APB_Master.$auto$proc_dlatch.cc:543:proc_dlatch$2458 ($adlatch): EN=$auto$rtlil.cc:3267:Not$2421, D=\SWDATA, Q=\PWDATA
+Replacing APB_Master.$auto$proc_dlatch.cc:543:proc_dlatch$2473 ($adlatch): EN=$auto$rtlil.cc:3267:Not$2421, D=\SSTRB, Q=\PSTRB
+Replacing APB_Master.$auto$proc_dlatch.cc:543:proc_dlatch$2488 ($adlatch): EN=$auto$rtlil.cc:3267:Not$2421, D=\SPROT, Q=\PPROT
+Replacing APB_Master.$auto$proc_dlatch.cc:547:proc_dlatch$2374 ($dlatch): EN=$auto$rtlil.cc:3271:ReduceOr$2372, D=$0\PSEL[0:0], Q=\PSEL
+Replacing APB_Master.$auto$proc_dlatch.cc:547:proc_dlatch$2407 ($dlatch): EN=$auto$rtlil.cc:3271:ReduceOr$2372, D=$0\PENABLE[0:0], Q=\PENABLE
+Replacing APB_Master.$procdff$2551 ($adff): ARST=\PRESETn, D=\ns, Q=\cs
+
+6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \APB_Master..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \apb4_formal..
+Removed 39 unused cells and 41 unused wires.
+<suppressed ~41 debug messages>
+
+7. Executing FORMALFF pass.
+
+8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \APB_Master..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \apb4_formal..
+Removed 42 unused cells and 44 unused wires.
+<suppressed ~52 debug messages>
+
+9. Executing CHECK pass (checking for obvious problems).
+Checking module APB_Master...
+Checking module APB_Slave...
+Checking module apb4_formal...
+Found and reported 0 problems.
+
+10. Executing SETUNDEF pass (replace undef values with defined constants).
+
+11. Executing OPT pass (performing simple optimizations).
+
+11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module APB_Master.
+Optimizing module APB_Slave.
+Optimizing module apb4_formal.
+<suppressed ~1 debug messages>
+
+11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\APB_Master'.
+Computing hashes of 43 cells of `\APB_Master'.
+Finding duplicate cells in `\APB_Master'.
+Finding identical cells in module `\APB_Slave'.
+Computing hashes of 342 cells of `\APB_Slave'.
+Finding duplicate cells in `\APB_Slave'.
+Finding identical cells in module `\apb4_formal'.
+Computing hashes of 98 cells of `\apb4_formal'.
+Finding duplicate cells in `\apb4_formal'.
+Removed a total of 0 cells.
+
+11.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+11.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \APB_Master..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \apb4_formal..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+11.5. Finished fast OPT passes.
+
+12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \APB_Master..
+Finding unused cells or wires in module \APB_Slave..
+Finding unused cells or wires in module \apb4_formal..
+Removed 0 unused cells and 134 unused wires.
+<suppressed ~3 debug messages>
+
+13. Executing RTLIL backend.
+Output filename: ../model/design_prep.il
+
+End of script. Logfile hash: 1b2f075991, time: 0.05s, user: 0.05s, system: 0.01s, MEM: 20.96 MB peak
+Yosys 0.68+130 (git sha1 dd83bbad2-dirty, Release, Clang /usr/bin/clang++ 21.1.8)
+Time spent: 44% 4x opt_clean (0 sec), 13% 1x check (0 sec), ...
+
+=== model/design_smt2.log ===
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.68+130 (git sha1 dd83bbad2-dirty, Release, Clang /usr/bin/clang++ 21.1.8)
+
+-- Executing script file `design_smt2.ys' --
+
+1. Executing RTLIL frontend.
+Input filename: design_prep.il
+
+2. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `apb4_formal'. Setting top module to apb4_formal.
+
+2.1. Analyzing design hierarchy..
+Top module:  \apb4_formal
+Used module:     \APB_Master
+Used module:     \APB_Slave
+
+2.2. Analyzing design hierarchy..
+Top module:  \apb4_formal
+Used module:     \APB_Master
+Used module:     \APB_Slave
+Removed 0 unused modules.
+Module apb4_formal directly or indirectly contains formal properties -> setting "keep" attribute.
+
+3. Executing FORMALFF pass.
+
+4. Executing DFFUNMAP pass (unmap clock enable and synchronous reset from FFs).
+
+5. Printing statistics.
+
+=== APB_Master ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       54 wires
+      328 wire bits
+       27 public wires
+      231 public wire bits
+       17 ports
+      151 port bits
+       45 cells
+        3   $and
+        8   $anyinit
+        1   $assume
+        2   $eq
+        2   $logic_and
+        2   $logic_not
+       21   $mux
+        4   $not
+        1   $pmux
+        1   $reduce_or
+
+=== APB_Slave ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      352 wires
+     7461 wire bits
+      136 public wires
+     2670 public wire bits
+       12 ports
+      110 port bits
+      344 cells
+        2   $anyinit
+      124   $anyseq
+        1   $assume
+       15   $eq
+        1   $logic_and
+        1   $mem_v2
+      197   $mux
+        1   $not
+        1   $reduce_bool
+        1   $reduce_or
+
+=== apb4_formal ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       97 wires
+      423 wire bits
+       37 public wires
+      267 public wire bits
+        1 ports
+        1 port bits
+       98 cells
+        1   $anyconst
+        4   $anyinit
+        6   $anyseq
+        6   $assert
+        3   $assume
+        5   $eq
+       15   $ff
+        1   $initstate
+       16   $logic_and
+        5   $logic_not
+        1   $lt
+       31   $mux
+        2   $not
+        1   $or
+        1   $reduce_bool
+        2 submodules
+        1   APB_Master
+        1   APB_Slave
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+      487 apb4_formal
+       45 APB_Master
+      344 APB_Slave
+
+        +----------Count including submodules.
+        | 
+      503 wires
+     8212 wire bits
+      200 public wires
+     3168 public wire bits
+       30 ports
+      262 port bits
+        - memories
+        - memory bits
+        - processes
+      487 cells
+        3   $and
+        1   $anyconst
+       14   $anyinit
+      130   $anyseq
+        6   $assert
+        5   $assume
+       22   $eq
+       15   $ff
+        1   $initstate
+       19   $logic_and
+        7   $logic_not
+        1   $lt
+        1   $mem_v2
+      249   $mux
+        7   $not
+        1   $or
+        1   $pmux
+        2   $reduce_bool
+        2   $reduce_or
+        2 submodules
+        1   APB_Master
+        1   APB_Slave
+
+6. Executing SMT2 backend.
+
+6.1. Executing BMUXMAP pass.
+
+6.2. Executing DEMUXMAP pass.
+Creating SMT-LIBv2 representation of module APB_Slave.
+Creating SMT-LIBv2 representation of module APB_Master.
+Creating SMT-LIBv2 representation of module apb4_formal.
+
+End of script. Logfile hash: 28872ff307, time: 0.02s, user: 0.02s, system: 0.01s, MEM: 17.88 MB peak
+Yosys 0.68+130 (git sha1 dd83bbad2-dirty, Release, Clang /usr/bin/clang++ 21.1.8)
+Time spent: 78% 2x write_smt2 (0 sec), 13% 2x read_rtlil (0 sec), ...

@@ -1,0 +1,73 @@
+provider:
+    head_ip: ${CHIA_HEAD_IP}
+
+auth:
+    ssh_user: ${USER}
+    ssh_private_key: ~/.ssh/id_rsa # Comment if credentials are in SSH agent
+
+overrides: # Not needed for this tutorial
+    <hostname>:
+        ssh_user: otheruser
+
+available_node_types:
+
+    hello_sby:
+        resources: {"sby": 1}
+        num_workers: 1
+        compatible_ips: [${CHIA_HEAD_IP}] # Or [Another_host]
+        docker:
+            image: "chia-sby:latest"
+            container_name: "chia-sby-${USER}"
+            pull_before_run: false
+            run_options:
+                - --shm-size=10.24gb
+
+    hello_opencode:
+        resources: {"opencode_creds": 1}
+        worker_setup_commands: ["source ~/.bashrc"]
+        num_workers: 1
+        compatible_ips: [${CHIA_HEAD_IP}] # Or [Another_host]
+        docker:
+            image: ghcr.io/ucb-bar/chia-opencode:latest
+            container_name: "chia-opencode-${USER}"
+
+    api:
+        resources: {"vertex_creds": 1}
+        compatible_ips: [${CHIA_HEAD_IP}] # Or [Another_host]
+        docker:
+            # chia-ollama's entrypoint does `mkdir $HOME/.ollama` at container
+            # start, unconditionally, before any run_setup_commands run - as
+            # a non-root --user with no /etc/passwd entry yet, $HOME resolves
+            # empty and it crashes on `mkdir //.ollama` (confirmed via `docker
+            # logs`), so the container never comes up. chia-opencode has no
+            # such entrypoint (bare bash, no service to start) and already
+            # ships python, so it's a plain image that tolerates --user fine.
+            image: "ghcr.io/ucb-bar/chia-opencode:latest"
+            container_name: "chia-vertex-${USER}"
+            run_options:
+                # Run as the host uid so the container reads the mounted ADC
+                # file as its actual owner (it's mode 600 on a world-traversable
+                # NFS home dir - as root the read hits NFS root_squash and
+                # fails with EPERM, and chmod-ing the file to be world-readable
+                # would expose GCP creds to every local user on this host).
+                # Same pattern as the antigravity node below.
+                - "--user $(id -u):$(id -g)"
+                - "-v ${HOME}/.config/gcloud:/home/ray/.config/gcloud"
+                - "-e GOOGLE_CLOUD_PROJECT=${VERTEX_PROJECT} "
+            run_setup_commands:
+                - echo "user:x:$(id -u):$(id -g)::/home/ray:/bin/bash" >> /etc/passwd
+        worker_setup_commands: ["pip install --no-cache-dir google-genai mcp"]
+
+# docker exec -it chia-antigravity-schmitz-0 agy --print "Reply with exactly PONG" to login after shutdonw?
+
+head_env_commands: ["source ~/.bashrc && conda activate chia_env"]
+head_setup_commands: ["source ~/.bashrc && conda activate chia_env"]
+head_start_ray_commands:
+    - "source ~/.bashrc && conda activate chia_env && ray stop"
+    - "source ~/.bashrc && conda activate chia_env && \
+        ray start --head --port=6379 \
+        --include-dashboard=True --dashboard-agent-listen-port=0"
+
+worker_start_ray_commands:
+    - "ray stop"
+    - "ray start --address=$RAY_HEAD_IP:6379 --dashboard-agent-listen-port=0"

@@ -1,0 +1,13 @@
+[options]
+mode prove
+
+[script]
+read_verilog -sv sha512.v sha512_miter.sv
+prep -top sha512_miter
+
+[engines]
+smtbmc
+
+[files]
+sha512.v
+sha512_miter.sv

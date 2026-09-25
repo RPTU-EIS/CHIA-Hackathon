@@ -1,0 +1,40 @@
+BUG_REPORT
+The BMC run resulted in multiple `Assertion FAIL` reports. All reported failures share the same root cause.
+
+**1. Failure Diagnosis**
+
+*   **Classification:** `Assertion FAIL`.
+
+*   **Failed Assertions:**
+    *   `Assert failed in apb4_formal: a_data_byte3 ... at apb4_formal.sv:114.29-114.88 step 6`
+    *   `Assert failed in apb4_formal: a_data_byte2 ... at apb4_formal.sv:113.29-113.88 step 6`
+    *   `Assert failed in apb4_formal: a_data_byte1 ... at apb4_formal.sv:112.29-112.87 step 8`
+    *   `Assert failed in apb4_formal: a_data_byte0 ... at apb4_formal.sv:111.29-111.86 step 8`
+
+*   **Root Cause Analysis:**
+    The failing assertions `a_data_byte0` through `a_data_byte3` verify data integrity for reads after writes. The design brief requirement is explicit: "PSTRB selects bytes to update; unselected bytes must be preserved." The formal property's scoreboard (`expected_data`) correctly models this byte-preserving behavior by only updating byte lanes for which the corresponding `PSTRB` bit is high.
+
+    Static analysis of the `APB_Slave.v` module reveals a critical bug in the write logic. The slave does not preserve unselected bytes. Instead, the `case (PSTRB)` statement (lines 28-45) overwrites the entire 32-bit memory word on every partial write. The un-strobed byte lanes are either zeroed-out or overwritten with sign-extensions from a written byte.
+
+    For example, for a write with `PSTRB = 4'b1000`, the RTL executes:
+    `Cache[PADDR] <= {PWDATA[31:24], 24'h000000};`
+    This correctly writes the most significant byte from `PWDATA` but incorrectly overwrites the lower three bytes of the memory location with zero, destroying any previously stored data.
+
+    A counterexample sequence that triggers the failure is:
+    1.  A first write operation populates a memory location with a value in one byte lane (e.g., a write with `PSTRB=4'b0001` to address `A`).
+    2.  A second, partial write to the same address `A` updates a different byte lane (e.g., a write with `PSTRB=4'b1000`).
+    3.  The scoreboard correctly models that the byte from the first write should be preserved.
+    4.  The RTL, however, overwrites the byte from the first write with zeros.
+    5.  A subsequent read from address `A` will return the corrupted data from the slave, which does not match the scoreboard's expected value, causing the data integrity assertions (`a_data_byte*`) to fail.
+
+    The property is correctly written to the specification and has successfully identified a major data corruption bug in the RTL. No changes to the properties or harness are needed.
+
+**2. RTL Bug Report**
+
+*   **Bug:** The APB slave's write logic violates the requirement to preserve unselected bytes during partial writes, leading to data corruption.
+*   **Faulty RTL:** `APB_Slave.v`, lines 28-45, within the `always @ (posedge PCLK)` block. The entire `case (PSTRB)` statement is faulty.
+*   **Suggested Repair:** The slave's write logic must be modified to implement a read-modify-write behavior. For any given write, the existing word at `Cache[PADDR]` should be used as a basis, and only the byte lanes selected by `PSTRB` should be updated with data from `PWDATA`. A correct implementation would use individual `if` statements for each byte lane, for example:
+    `if (PSTRB[0]) Cache[PADDR][7:0] <= PWDATA[7:0];`
+    `if (PSTRB[1]) Cache[PADDR][15:8] <= PWDATA[15:8];`
+    `if (PSTRB[2]) Cache[PADDR][23:16] <= PWDATA[23:16];`
+    `if (PSTRB[3]) Cache[PADDR][31:24] <= PWDATA[31:24];`

@@ -1,0 +1,12 @@
+[options]
+mode prove
+[script]
+plugin -i slang
+read_slang sha512.v sha512_miter.sv --top sha512_miter
+
+[engines]
+abc pdr
+
+[files]
+sha512.v
+sha512_miter.sv

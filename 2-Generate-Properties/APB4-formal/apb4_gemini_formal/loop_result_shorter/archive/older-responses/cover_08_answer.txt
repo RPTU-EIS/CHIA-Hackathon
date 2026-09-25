@@ -1,0 +1,259 @@
+Based on the log, the coverage task failed because the `c_partial_overwrite` goal was unreached within the 20-cycle depth. All other goals were reached, indicating the basic testbench setup is sound.
+
+### Diagnosis
+
+The unreached cover property is defined as follows:
+
+```systemverilog
+// UNREACHED line
+// Line 172:
+if (past_valid_ff && $past(PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr) && $past(|byte_valid) && (byte_valid != 4'b1111) &&
+    (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr)) begin
+    c_partial_overwrite: cover(1);
+end
+```
+
+The issue lies in a contradictory set of conditions that can never be met by a valid APB protocol sequence. Let's analyze the temporal logic:
+
+1.  `(PSEL && PENABLE && ...)`: This requires a write to complete in the current cycle (`t`). This corresponds to the APB ACCESS phase.
+2.  `$past(PSEL && PENABLE && ...)`: This requires a write to have also completed in the *immediately preceding* cycle (`t-1`).
+
+An APB transfer requires at least two cycles: one SETUP cycle (`PSEL=1, PENABLE=0`) followed by at least one ACCESS cycle (`PSEL=1, PENABLE=1`). It is impossible for the bus to be in the ACCESS phase for two consecutive cycles. After an ACCESS cycle, the master must transition to either IDLE or back to SETUP for a new transfer. Therefore, the condition `(ACCESS at t-1) AND (ACCESS at t)` is a protocol violation and can never occur. This makes the cover goal unreachable.
+
+### Repair
+
+The intent of the cover property is to verify that a write can occur to a memory location that has been previously written to, but only partially (i.e., not all byte lanes were written in the first transaction). The state of previously written bytes is tracked by the `byte_valid` register.
+
+The correct logic should check for a write completion *now* to an address where `byte_valid` indicates a previous, partial write. This can be expressed as:
+
+1.  A write to `watched_addr` completes in the current cycle.
+2.  At the start of this cycle, `byte_valid` is non-zero (indicating a prior write).
+3.  At the start of this cycle, `byte_valid` is not all ones (indicating the prior write was partial).
+
+The corrected property removes the impossible `$past(ACCESS)` condition and simplifies the check on `byte_valid`, ensuring reachability. Using `|byte_valid|` instead of `$past(|byte_valid|)` correctly handles back-to-back writes.
+
+The following change will be made to the `c_partial_overwrite` property in `apb4_formal.sv`:
+
+-   **Original:** The condition required impossible back-to-back ACCESS phases.
+-   **Corrected:** The condition now checks for a write completion to a word that is in a partially-written state, which is a legal and meaningful scenario.
+
+This change corrects the faulty cover definition without modifying any other valid checks or assumptions.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal (
+    input wire PCLK,
+    // --- DUT inputs (driven symbolically) ---
+    input wire SWRITE,
+    input wire [31:0] SADDR,
+    input wire [31:0] SWDATA,
+    input wire [3:0] SSTRB,
+    input wire [2:0] SPROT,
+    input wire transfer
+);
+
+// --- Internal wires ---
+// PRESETn is driven internally to create a specific reset sequence.
+wire PRESETn;
+
+// --- DUT-internal wires ---
+wire PSEL, PENABLE, PWRITE;
+wire [31:0] PADDR, PWDATA;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire PREADY, PSLVERR;
+wire [31:0] PRDATA;
+
+// --- DUT Instantiation ---
+APB_Master Master (
+    .PCLK(PCLK), .PRESETn(PRESETn), .SWRITE(SWRITE), .SADDR(SADDR), .SWDATA(SWDATA),
+    .SSTRB(SSTRB), .SPROT(SPROT), .transfer(transfer), .PSEL(PSEL), .PENABLE(PENABLE),
+    .PWRITE(PWRITE), .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT),
+    .PREADY(PREADY), .PSLVERR(PSLVERR)
+);
+
+APB_Slave Slave (
+    .PCLK(PCLK), .PRESETn(PRESETn), .PSEL(PSEL), .PENABLE(PENABLE), .PWRITE(PWRITE),
+    .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT),
+    .PREADY(PREADY), .PSLVERR(PSLVERR), .PRDATA(PRDATA)
+);
+
+// --- Harness State and Environment ---
+reg first_cycle_ff = 1;
+reg past_valid_ff = 0;
+
+always @(posedge PCLK) begin
+    first_cycle_ff <= 0;
+    past_valid_ff <= 1;
+end
+
+// Assumption: PRESETn is active low for the first cycle only.
+assign PRESETn = !first_cycle_ff;
+
+// Requester contract: Do not start a new transfer while reset is active.
+always @(posedge PCLK) begin
+    if (!PRESETn) begin
+        assume(transfer == 0);
+    end
+end
+
+// --- Assertions and Covers ---
+always @(posedge PCLK) begin
+    // --- Reset Properties ---
+    // Slave reset is synchronous, outputs should be 0 on the cycle after reset is asserted.
+    if (past_valid_ff && $past(!PRESETn)) begin
+        a_slave_reset_outputs: assert(PSLVERR == 0 && PRDATA == 0);
+    end
+    
+    // After reset is released, master should be in IDLE state.
+    if (past_valid_ff && $rose(PRESETn)) begin
+        a_master_reset_state: assert(PSEL == 0 && PENABLE == 0);
+    end
+
+    // --- Protocol Properties ---
+    // Master must hold control signals stable from SETUP through ACCESS.
+    if (past_valid_ff && $past(PSEL && !PENABLE) && (PSEL && PENABLE)) begin // SETUP -> ACCESS
+        a_addr_stable: assert($stable(PADDR));
+        a_pwrite_stable: assert($stable(PWRITE));
+        if ($past(PWRITE)) begin
+            a_pwdata_stable: assert($stable(PWDATA));
+            a_pstrb_stable: assert($stable(PSTRB));
+        end
+    end
+
+    // Slave PREADY must be correct (no wait states).
+    a_pready_logic: assert(PREADY == (PSEL && PENABLE));
+
+    // Check PSLVERR logic. The slave registers the error status during the SETUP phase.
+    // The result (PSLVERR) is then visible during the ACCESS phase.
+    if (past_valid_ff && $past(PSEL && !PENABLE) && (PSEL && PENABLE)) begin // If transitioning SETUP -> ACCESS
+        // Check PSLVERR based on conditions from previous (SETUP) cycle.
+        
+        // An access to an invalid address should generate an error.
+        if ($past(PADDR >= 1024)) begin
+            a_pslverr_on_bad_addr: assert(PSLVERR == 1);
+        end
+        // An invalid read (PWRITE=0, PSTRB!=0) to a valid address should generate an error.
+        else if ($past(!PWRITE && PSTRB != 4'b0000)) begin
+             a_pslverr_on_bad_read: assert(PSLVERR == 1);
+        end
+        // A valid transfer to a valid address must not generate an error.
+        else begin
+            if ($past(!PWRITE)) begin
+                a_pslverr_on_good_read: assert(PSLVERR == 0);
+            end
+            if ($past(PWRITE)) begin
+                a_pslverr_on_good_write: assert(PSLVERR == 0);
+            end
+        end
+    end
+end
+
+// --- Data Integrity Checker ---
+(* anyconst *) reg [9:0] watched_addr;
+reg [31:0] expected_data;
+reg [3:0] byte_valid;
+
+initial begin
+    byte_valid = 4'b0000;
+end
+
+always @(posedge PCLK) begin
+    if (!PRESETn) begin
+        byte_valid <= 4'b0000;
+        // Memory is uninitialized, so expected_data is not initialized.
+    end else begin
+        // A write completed to the watched address in the ACCESS phase. Update our model.
+        if (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PADDR < 1024) begin
+            expected_data <= {
+                PSTRB[3] ? PWDATA[31:24] : expected_data[31:24],
+                PSTRB[2] ? PWDATA[23:16] : expected_data[23:16],
+                PSTRB[1] ? PWDATA[15:8]  : expected_data[15:8],
+                PSTRB[0] ? PWDATA[7:0]   : expected_data[7:0]
+            };
+            byte_valid <= byte_valid | PSTRB;
+        end
+
+        // A legal read completes in the ACCESS phase. Data is available on PRDATA.
+        // The value on PRDATA was registered by the slave at the end of the SETUP phase.
+        // The expected_data reflects the state of memory from the last completed write.
+        // This check will fail if the slave's byte-lane write logic is incorrect.
+        if (PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0000 && PADDR[9:0] == watched_addr && PADDR < 1024) begin
+            if (byte_valid[0]) begin a_data_byte0: assert(PRDATA[7:0]   == expected_data[7:0]);   end
+            if (byte_valid[1]) begin a_data_byte1: assert(PRDATA[15:8]  == expected_data[15:8]);  end
+            if (byte_valid[2]) begin a_data_byte2: assert(PRDATA[23:16] == expected_data[23:16]); end
+            if (byte_valid[3]) begin a_data_byte3: assert(PRDATA[31:24] == expected_data[31:24]); end
+        end
+    end
+end
+
+// --- Cover points ---
+always @(posedge PCLK) begin
+    if (!PRESETn) c_reset_active: cover(1);
+    if (past_valid_ff && $rose(PRESETn)) c_reset_release: cover(1);
+    
+    // Master FSM phases
+    if (PSEL && !PENABLE) c_setup_phase: cover(1);
+    if (PSEL && PENABLE)  c_access_phase: cover(1);
+    
+    // Transfer completion
+    if (PSEL && PENABLE && PREADY && PWRITE) c_write_completes: cover(1);
+    if (PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0000) c_read_completes: cover(1);
+    
+    // Back-to-back transfer (ACCESS -> SETUP)
+    if (past_valid_ff && $past(PREADY && transfer) && (PSEL && !PENABLE)) c_back_to_back: cover(1);
+
+    // Error condition trigger
+    if (PSEL && !PENABLE && PADDR >= 1024) c_addr_error_trigger: cover(1);
+    if (PSEL && !PENABLE && !PWRITE && PSTRB != 4'b0000) c_read_error_trigger: cover(1);
+    
+    // Data integrity covers
+    if (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PADDR < 1024) c_data_write: cover(1);
+    if (PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0000 && PADDR[9:0] == watched_addr && |byte_valid) c_data_readback: cover(1);
+    
+    // Cover a partial overwrite of an already written word.
+    // A write completes to the watched address, which has been previously written to
+    // (`|byte_valid|` is true), but was not fully written (`byte_valid != 4'b1111`).
+    // The `byte_valid` register reflects the state *before* the current write completes.
+    if (past_valid_ff && (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr) &&
+        |byte_valid && (byte_valid != 4'b1111)) begin
+        c_partial_overwrite: cover(1);
+    end
+end
+
+endmodule
+```

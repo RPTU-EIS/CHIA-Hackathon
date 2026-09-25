@@ -1,0 +1,30 @@
+REVIEW_OK
+
+The provided harness and properties are well-designed and correctly align with the design brief and formal verification best practices.
+
+**Audit of Assertions and Environment:**
+
+*   **Reset and History:** The `first_cycle`/`PRESETn` logic correctly models an initial active-low reset. Assertions are properly guarded by `!PRESETn` for reset checks and by `past_valid` for temporal checks, preventing spurious failures before the first valid clock edge post-reset.
+*   **Requester Constraints (`assume`):** The environment constraints are correctly applied. `assume(SADDR < 1024)` is placed on the requester's `SADDR` input signal when a new transfer starts (`transfer`), correctly constraining traffic to the valid address range as specified.
+*   **Scope:** The data integrity check correctly uses the full `PADDR` for the `is_watched_addr` comparison (`PADDR[31:10] == 0`), preventing false positives from aliased addresses.
+*   **Shadow Model:** The shadow model for `r_expected_data` correctly implements the byte-preservation requirement for writes. It uses `if (PSTRB[i])` to update only the selected bytes, creating an independent specification to check against the DUT, rather than mimicking the DUT's buggy `case` statement. This is essential for detecting the bug.
+*   **Data Integrity (`a_data_integrity_*`):** These assertions correctly trigger on a completed legal read (`transfer_done && is_read && PSTRB == 4'b0000`). They check `PRDATA` only for bytes that have been previously written (`r_byte_valid`), avoiding checks on uninitialized data. The timing is correct.
+*   **Protocol Error Checks:**
+    *   `a_read_with_strb_is_error`: Correctly asserts that the slave must signal `PSLVERR` for an invalid read (`PSTRB != 0`).
+    *   `a_valid_read_no_err` / `a_valid_write_no_err`: Correctly assert that legal transfers should not produce an error, adhering to the brief's instruction not to invent error conditions.
+*   **Slave `PREADY` Check (`a_slave_ready`):** This correctly verifies the slave's zero-wait-state behavior (`PREADY` must be high in the ACCESS phase).
+*   **Covers:** The `cover` properties are comprehensive, targeting reset, basic APB states, back-to-back transfers, and the specific trigger conditions for both the data integrity check (`c_read_after_write`, `c_partial_overwrite`) and the error check (`c_read_err_trigger`).
+
+**Clock Timing Analysis for Data Integrity Check:**
+
+The checker correctly handles the slave's behavior of updating `PRDATA` during the SETUP phase. A check at the end of the ACCESS phase is correctly aligned. The following table illustrates a sequence of two back-to-back reads to different addresses (AddrA, then AddrB) after they have been written with DataA and DataB, respectively. Let `watched_addr` be AddrA.
+
+| Cycle | `PCLK` | Bus Phase (Transfer) | `PADDR` | `PENABLE` | `transfer_done` | `PRDATA` (Value at cycle end) | Checker State & Assertion |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| T0 | ↑ | IDLE | - | 0 | 0 | (old value) | Env asserts `transfer` for Read A. |
+| T1 | ↑ | SETUP (Read A) | AddrA | 0 | 0 | **DataA** | Slave sees read to AddrA, updates `PRDATA`. |
+| T2 | ↑ | ACCESS (Read A) | AddrA | 1 | 1 | DataA | **Assertion for Read A fires.** `is_watched_addr` is true. `PRDATA` (holding `DataA`) is compared against `r_expected_data` (holding `DataA`). Env asserts `transfer` for Read B. |
+| T3 | ↑ | SETUP (Read B) | AddrB | 0 | 0 | **DataB** | Slave sees read to AddrB, updates `PRDATA`. |
+| T4 | ↑ | ACCESS (Read B) | AddrB | 1 | 1 | DataB | Assertion trigger for Read B is false because `is_watched_addr` is false. The checker correctly ignores this transfer. |
+
+The assertion for Read A fires at T2. It compares the current `PRDATA` (which has held `DataA` since the end of T1) with the expected data for transaction A. The checker does not use extra `$past` delays on registered flags, ensuring correct alignment and avoiding confusion between the data from consecutive transfers.

@@ -1,0 +1,18 @@
+[tasks]
+prove: default
+
+[options]
+mode prove
+depth 20
+
+[engines]
+smtbmc z3
+
+[script]
+read_verilog -sv -formal gcd_binary.sv
+read_verilog -sv -formal -D FV_ASSERT fv_gcd_sby.sv
+prep -top fv_gcd_sby
+
+[files]
+gcd_binary.sv
+fv_gcd_sby.sv

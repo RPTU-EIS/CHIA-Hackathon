@@ -1,0 +1,233 @@
+The build fails due to a basic Verilog syntax error. The Yosys log correctly identifies the problem: `apb4_formal.sv:117: ERROR: Invalid nesting of always blocks and/or initializations.` This error points to the line `reg trigger_legal_read_now = 1'b0;`, which is a variable declaration illegally placed inside an `always @(posedge PCLK)` procedural block.
+
+In Verilog, all `reg` and `wire` declarations must be at the module scope, not within procedural blocks like `always`. The fix is to move this declaration to the module scope with the other trigger-related registers. I will remove the illegal in-process declaration, leaving the subsequent assignment to the now-correctly-scoped register intact.
+
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 10
+--
+cover:
+mode cover
+depth 10
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(input wire PCLK);
+  // --- External System / Requester Driver ---
+  (* anyseq *) reg transfer, SWRITE;
+  (* anyseq *) reg [31:0] SADDR, SWDATA;
+  (* anyseq *) reg [3:0] SSTRB;
+  (* anyseq *) reg [2:0] SPROT;
+
+  // --- Reset and History Generation ---
+  reg first_cycle = 1'b1;
+  reg past_valid = 1'b0;
+  reg past_PRESETn = 1'b0;
+  wire PRESETn = !first_cycle;
+
+  always @(posedge PCLK) begin
+    first_cycle <= 1'b0;
+    past_valid <= 1'b1;
+    past_PRESETn <= PRESETn;
+  end
+
+  // --- DUT Connections ---
+  wire PSEL, PENABLE, PWRITE;
+  wire [31:0] PADDR, PWDATA, PRDATA;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire PREADY, PSLVERR;
+
+  APB_Master Master (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .SWRITE(SWRITE),
+      .SADDR(SADDR),
+      .SWDATA(SWDATA),
+      .SSTRB(SSTRB),
+      .SPROT(SPROT),
+      .transfer(transfer),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR)
+  );
+
+  APB_Slave Slave (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR),
+      .PRDATA(PRDATA)
+  );
+
+  // --- Requester Contract (Assumptions) ---
+  always @(posedge PCLK) begin
+    // Assume valid addresses are used for transfers after reset.
+    if (PRESETn && transfer) begin
+      assume(SADDR < 32'd1024);
+    end
+  end
+
+  // --- Properties and Scoreboard ---
+  (* anyconst *) reg [31:0] watched_addr;
+  initial assume(watched_addr[31:10] == 22'b0); // Constrain to 0..1023
+
+  reg [31:0] expected_data;
+  reg [3:0]  known_bytes;
+
+  wire is_setup   = PSEL && !PENABLE;
+  wire is_access  = PSEL && PENABLE;
+  wire at_watched_addr = (PADDR == watched_addr);
+
+  // Transaction completion signals (in ACCESS phase with PREADY)
+  wire write_complete = is_access && PWRITE && PREADY;
+  wire read_complete  = is_access && !PWRITE && PREADY;
+  
+  // --- Scoreboard, Check Triggers ---
+  
+  // Triggers for assertions that need to be delayed one cycle
+  reg fire_check_legal_read;
+  reg fire_check_illegal_read;
+  reg fire_check_write;
+  reg trigger_legal_read_now;
+  
+  // Latched data for delayed assertions
+  reg [31:0] expected_data_for_check;
+  reg [3:0]  known_bytes_for_check;
+
+  always @(posedge PCLK) begin
+    if (!PRESETn) begin
+      known_bytes <= 4'b0;
+      fire_check_legal_read <= 1'b0;
+      fire_check_illegal_read <= 1'b0;
+      fire_check_write <= 1'b0;
+    end else begin
+      // --- Scoreboard Update ---
+      // Update on completed write to watched_addr.
+      if (write_complete && at_watched_addr) begin
+        if (PSTRB[0]) expected_data[7:0]   <= PWDATA[7:0];
+        if (PSTRB[1]) expected_data[15:8]  <= PWDATA[15:8];
+        if (PSTRB[2]) expected_data[23:16] <= PWDATA[23:16];
+        if (PSTRB[3]) expected_data[31:24] <= PWDATA[31:24];
+        known_bytes <= known_bytes | PSTRB;
+      end
+
+      // --- Set up assertion triggers for the NEXT cycle ---
+      // These fire in the ACCESS phase to capture state for checking in the following cycle.
+
+      // 1. Legal read data integrity check
+      trigger_legal_read_now = past_valid && read_complete && at_watched_addr && $past(is_setup && !PWRITE && PSTRB == 4'b0 && at_watched_addr);
+      fire_check_legal_read <= trigger_legal_read_now;
+      if (trigger_legal_read_now) begin
+        expected_data_for_check <= expected_data;
+        known_bytes_for_check   <= known_bytes;
+      end
+
+      // 2. Illegal read PSLVERR check
+      fire_check_illegal_read <= past_valid && read_complete && $past(is_setup && !PWRITE && PSTRB != 4'b0);
+
+      // 3. Write PSLVERR check
+      fire_check_write <= write_complete;
+    end
+  end
+
+  // --- Assertions (Delayed) ---
+  always @(posedge PCLK) begin
+    // These check the registered slave outputs (PRDATA, PSLVERR) one cycle after the ACCESS phase
+    // to ensure the values have propagated through the slave's registers.
+    if (past_valid && past_PRESETn) begin // Guards for normal operation after reset release
+      
+      // Requirement: For a legal read, data from known-written bytes must match.
+      if (fire_check_legal_read) begin
+        if (known_bytes_for_check[0]) a_data_byte0: assert(PRDATA[7:0]   == expected_data_for_check[7:0]);
+        if (known_bytes_for_check[1]) a_data_byte1: assert(PRDATA[15:8]  == expected_data_for_check[15:8]);
+        if (known_bytes_for_check[2]) a_data_byte2: assert(PRDATA[23:16] == expected_data_for_check[23:16]);
+        if (known_bytes_for_check[3]) a_data_byte3: assert(PRDATA[31:24] == expected_data_for_check[31:24]);
+      end
+
+      // Requirement: An invalid read (PSTRB != 0) should be flagged with PSLVERR.
+      if (fire_check_illegal_read) begin
+        a_illegal_read_slverr: assert(PSLVERR == 1'b1);
+      end
+      
+      // Requirement: The slave design never generates an error on a write transaction.
+      if (fire_check_write) begin
+        a_no_slverr_on_write: assert(PSLVERR == 1'b0);
+      end
+    end
+  end
+
+  // --- Covers ---
+  always @(posedge PCLK) begin
+    if (past_valid) begin
+        if (!past_PRESETn && PRESETn) begin
+            c_reset_release: cover(1);
+        end
+
+        if (PRESETn) begin
+            // Cover a full write, a partial write, and a zero-strobe write to the watched address
+            if (write_complete && at_watched_addr) begin
+                c_full_write:   cover(PSTRB == 4'b1111);
+                c_partial_write:cover(PSTRB != 4'b1111 && PSTRB != 4'b0000);
+                c_zero_strobe_write: cover(PSTRB == 4'b0000);
+            end
+
+            // Cover the trigger for the data integrity assertion.
+            // This is the cycle *before* the assertion fires.
+            if (past_valid && read_complete && at_watched_addr && $past(is_setup && !PWRITE && PSTRB == 4'b0 && at_watched_addr) && |known_bytes) begin
+                c_read_after_write: cover(1);
+            end
+
+            // Cover the trigger for the illegal read assertion.
+            if (past_valid && read_complete && $past(is_setup && !PWRITE && PSTRB != 4'b0)) begin
+                c_illegal_read_access: cover(1);
+            end
+            
+            // Cover the trigger for the write error assertion.
+            if (write_complete) begin
+                c_any_write_complete: cover(1);
+            end
+        end
+    end
+  end
+
+endmodule
+```

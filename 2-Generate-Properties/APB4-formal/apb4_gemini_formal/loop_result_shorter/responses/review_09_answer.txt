@@ -1,0 +1,232 @@
+REVIEW_FIX
+This review audits the current assertions against the design brief before running BMC. The cover pass confirmed reachability, but the assertions themselves must be validated for correctness.
+
+### Assertion Audit
+
+-   **Reset Guards and History:** The harness correctly generates an initial active-low reset. Normal-operation assertions are guarded by `past_valid && past_PRESETn`. `past_valid` ensures `$past()` has valid history, and `past_PRESETn` ensures the check happens at least one full cycle after reset is de-asserted, preventing protocol checks from evaluating signals during the reset state. This is correct.
+
+-   **Scope:** The assumption `if (PRESETn && transfer) assume(SADDR < 32'd1024);` correctly constrains the requester's addresses to the valid range, as required. The scoreboard and data integrity checks are gated by `at_watched_addr = (PADDR == watched_addr)`, which correctly compares the full 32-bit address on the bus to the watched address, preventing aliasing issues in the check.
+
+-   **Requirements:**
+    -   `a_data_byte*`: This set of assertions correctly implements the data integrity requirement for legal reads (`PSTRB==0`). It compares read data against an independent scoreboard only for bytes that are known to have been written. This correctly reflects the design brief.
+    -   `a_illegal_read_slverr`: This assertion correctly checks that an invalid read (`PSTRB!=0`) results in `PSLVERR=1`, as specified in the brief.
+    -   `a_no_slverr_on_write`: This assertion correctly checks that writes do not produce `PSLVERR=1`, which is an explicit requirement.
+    -   **`a_prdata_stable_on_illegal_read`**: This assertion is an invented requirement. The design brief states for invalid reads: "do not require valid PRDATA from it." The assertion `assert($stable(PRDATA))` imposes a specific behavior (no change) on `PRDATA`, which is an over-constraint. The brief only requires checking for `PSLVERR` in this case. This assertion must be removed.
+
+-   **Scoreboard Model:** The `expected_data` model correctly implements byte-enables: `if (PSTRB[i]) expected_data[i] <= PWDATA[i]`. This models preservation of unselected bytes and is independent of the slave's buggy `case(PSTRB)` implementation. This setup is correct and should expose the data corruption bugs in the slave RTL's write logic.
+
+-   **Clock Timing:** The timing of checks relative to DUT operations is correct. The slave's `PRDATA` is updated in the SETUP phase of a read, and the assertion checks this value at the end of the subsequent ACCESS phase. The following table illustrates correct alignment for a read of address A, immediately followed by a read of address B. `expected_data_A` is assumed to have been set by a prior write.
+
+| Cycle | Phase(A) | Phase(B) | `PSEL` | `PENABLE` | `PADDR` | `PRDATA` (end of cycle) | Checker Action (end of cycle) |
+|:-----:|:--------:|:--------:|:------:|:---------:|:-------:|:-----------------------:|:------------------------------|
+| T0    | -        | -        | 0      | 0         | -       | X                       | Request read A (`transfer=1`) |
+| T1    | SETUP    | -        | 1      | 0         | A       | `data_A`                | Slave reads `Cache[A]`        |
+| T2    | ACCESS   | -        | 1      | 1         | A       | `data_A`                | `assert(PRDATA == expected_data_A)`; Request read B (`transfer=1`) |
+| T3    | -        | SETUP    | 1      | 0         | B       | `data_B`                | Slave reads `Cache[B]`        |
+| T4    | -        | ACCESS   | 1      | 1         | B       | `data_B`                | Assertion for read B would fire here (if `watched_addr == B`) |
+
+The check for read A at T2 correctly uses `PRDATA` updated at T1, and is not confused by the subsequent read of B starting at T3. The use of `$past` to identify the SETUP phase conditions from the ACCESS phase is correctly implemented.
+
+### Conclusion and Fix
+
+The harness is mostly correct, but contains one invalid assertion (`a_prdata_stable_on_illegal_read`) that over-constrains the design based on an invented requirement. This assertion will be removed. The rest of the harness properly implements the verification plan and is well-positioned to find the data integrity bugs in the slave's write logic.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 10
+--
+cover:
+mode cover
+depth 10
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(input wire PCLK);
+  // --- External System / Requester Driver ---
+  (* anyseq *) reg transfer, SWRITE;
+  (* anyseq *) reg [31:0] SADDR, SWDATA;
+  (* anyseq *) reg [3:0] SSTRB;
+  (* anyseq *) reg [2:0] SPROT;
+
+  // --- Reset and History Generation ---
+  reg first_cycle = 1'b1;
+  reg past_valid = 1'b0;
+  reg past_PRESETn = 1'b0;
+  wire PRESETn = !first_cycle;
+
+  always @(posedge PCLK) begin
+    first_cycle <= 1'b0;
+    past_valid <= 1'b1;
+    past_PRESETn <= PRESETn;
+  end
+
+  // --- DUT Connections ---
+  wire PSEL, PENABLE, PWRITE;
+  wire [31:0] PADDR, PWDATA, PRDATA;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire PREADY, PSLVERR;
+
+  APB_Master Master (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .SWRITE(SWRITE),
+      .SADDR(SADDR),
+      .SWDATA(SWDATA),
+      .SSTRB(SSTRB),
+      .SPROT(SPROT),
+      .transfer(transfer),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR)
+  );
+
+  APB_Slave Slave (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR),
+      .PRDATA(PRDATA)
+  );
+
+  // --- Requester Contract (Assumptions) ---
+  always @(posedge PCLK) begin
+    // Assume valid addresses are used for transfers after reset.
+    if (PRESETn && transfer) begin
+      assume(SADDR < 32'd1024);
+    end
+  end
+
+  // --- Properties and Scoreboard ---
+  (* anyconst *) reg [31:0] watched_addr;
+  initial assume(watched_addr[31:10] == 22'b0); // Constrain to 0..1023
+
+  reg [31:0] expected_data;
+  reg [3:0]  known_bytes;
+
+  wire is_setup   = PSEL && !PENABLE;
+  wire is_access  = PSEL && PENABLE;
+  wire at_watched_addr = (PADDR == watched_addr);
+
+  // Transaction completion signals (in ACCESS phase with PREADY)
+  wire write_complete = is_access && PWRITE && PREADY;
+  wire read_complete  = is_access && !PWRITE && PREADY;
+  
+  // --- Scoreboard Update ---
+  always @(posedge PCLK) begin
+    if (!PRESETn) begin
+      known_bytes <= 4'b0;
+    end else begin
+      // Update scoreboard on completed write to the watched address.
+      // Unselected bytes in expected_data are preserved.
+      if (write_complete && at_watched_addr) begin
+        if (PSTRB[0]) expected_data[7:0]   <= PWDATA[7:0];
+        if (PSTRB[1]) expected_data[15:8]  <= PWDATA[15:8];
+        if (PSTRB[2]) expected_data[23:16] <= PWDATA[23:16];
+        if (PSTRB[3]) expected_data[31:24] <= PWDATA[31:24];
+        known_bytes <= known_bytes | PSTRB;
+      end
+    end
+  end
+
+  // --- Assertions ---
+  always @(posedge PCLK) begin
+    // Assertions are checked at the end of the ACCESS phase, when PREADY is high
+    // and the slave's response (PRDATA, PSLVERR) is valid.
+    if (past_valid && past_PRESETn) begin // Guards for normal operation after reset release
+      
+      // Requirement: For a legal read, data from known-written bytes must match.
+      // A legal read has PSTRB=0 and completes after a valid SETUP cycle.
+      if (read_complete && at_watched_addr && $past(is_setup && !PWRITE && PSTRB == 4'b0 && at_watched_addr)) begin
+        if (known_bytes[0]) a_data_byte0: assert(PRDATA[7:0]   == expected_data[7:0]);
+        if (known_bytes[1]) a_data_byte1: assert(PRDATA[15:8]  == expected_data[15:8]);
+        if (known_bytes[2]) a_data_byte2: assert(PRDATA[23:16] == expected_data[23:16]);
+        if (known_bytes[3]) a_data_byte3: assert(PRDATA[31:24] == expected_data[31:24]);
+      end
+
+      // Requirement: An invalid read (PSTRB != 0) should be flagged with PSLVERR.
+      if (read_complete && $past(is_setup && !PWRITE && PSTRB != 4'b0)) begin
+        a_illegal_read_slverr: assert(PSLVERR == 1'b1);
+      end
+      
+      // Requirement: The slave design never generates an error on a write transaction.
+      if (write_complete) begin
+        a_no_slverr_on_write: assert(PSLVERR == 1'b0);
+      end
+    end
+  end
+
+  // --- Covers ---
+  always @(posedge PCLK) begin
+    if (past_valid) begin
+        if (!past_PRESETn && PRESETn) begin
+            c_reset_release: cover(1);
+        end
+
+        if (PRESETn && past_PRESETn) begin
+            // Cover a full write, a partial write, and a zero-strobe write to the watched address
+            if (write_complete && at_watched_addr) begin
+                c_full_write:   cover(PSTRB == 4'b1111);
+                c_partial_write:cover(PSTRB != 4'b1111 && PSTRB != 4'b0000);
+                c_zero_strobe_write: cover(PSTRB == 4'b0000);
+            end
+
+            // Cover the trigger for the data integrity assertion.
+            if (read_complete && at_watched_addr && $past(is_setup && !PWRITE && PSTRB == 4'b0 && at_watched_addr) && |known_bytes) begin
+                c_read_after_write: cover(1);
+            end
+
+            // Cover the trigger for the illegal read assertion.
+            if (read_complete && $past(is_setup && !PWRITE && PSTRB != 4'b0)) begin
+                c_illegal_read_access: cover(1);
+            end
+            
+            // Cover the trigger for the write error assertion.
+            if (write_complete) begin
+                c_any_write_complete: cover(1);
+            end
+        end
+    end
+  end
+
+endmodule
+```

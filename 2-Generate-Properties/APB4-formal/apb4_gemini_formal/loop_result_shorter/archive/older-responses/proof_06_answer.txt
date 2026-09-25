@@ -1,0 +1,303 @@
+PROPERTY_FIX
+The BMC run reported five assertion failures. Four failures at step 1 are related to incorrectly timed or guarded reset properties. One failure at step 5 correctly identifies an RTL bug. The primary responsibility at this stage is to ensure the properties themselves are correct. Broken properties cannot be trusted to find bugs. Therefore, the property errors must be fixed first.
+
+The failing assertions are:
+1.  `apb4_formal.sv:146,150 (assert(PSEL==0), assert(PENABLE==0))`
+2.  `apb4_formal.sv:138,142 (assert(PRDATA==0), assert(PSLVERR==0))`
+3.  `apb4_formal.sv:214 (assert(!PSLVERR))`
+
+**Analysis of Failures:**
+
+1.  **Failures at `step 1` (lines 146, 150, 138, 142): Property Error**
+    These four assertions fail at the very beginning of the test (step 1). This is characteristic of properties being evaluated before the DUT state is properly initialized, or properties with incorrect timing assumptions about the reset sequence.
+    *   `assert_master_reset_outputs`: The checks `if (!PRESETn) assert(...)` are not guarded by a "history is valid" flag. At time 0, before the first clock edge, `PRESETn` is unknown (`x`), so the antecedent `!PRESETn` can be seen as true by the tool, while the master's outputs are also `x`. This leads to an `assert(x == 0)` failure.
+    *   `assert_slave_reset_outputs`: The trigger condition `if (past_valid && PRESETn && !$past(PRESETn))` is flawed. The `past_valid` signal logic prevents this condition from ever becoming true. Furthermore, the property checks the slave's registered outputs (`PRDATA`, `PSLVERR`) one cycle too early. The slave's reset is synchronous, so its outputs reflect the reset value on the cycle *after* the reset condition is met.
+
+2.  **Failure at `step 5` (line 214): RTL Bug**
+    The assertion `assert(!PSLVERR)` under the condition `$past(SETUP_PHASE && !PWRITE && PSTRB != 4'b0)` is designed to check that the slave does not erroneously assert `PSLVERR` in response to an invalid read during the SETUP phase. The slave's RTL at `APB_Slave.v:32` shows that the error logic is gated only by `PSEL`, which is high during both SETUP and ACCESS phases. The slave incorrectly asserts `PSLVERR` during SETUP, violating the APB protocol. This assertion is valid and has correctly identified an RTL bug.
+
+**Corrective Action:**
+
+The reset-related properties are faulty and must be corrected. The bug-finding property is correct and must be preserved. The appropriate action is `PROPERTY_FIX` to repair the harness. The bug will be reported by the corrected, valid properties in a subsequent run.
+
+The following changes are made to `apb4_formal.sv`:
+1.  The confusing `past_valid` logic is removed. A simple, standard `fv_past_valid` flag is introduced to guard all properties, preventing checks before the first clock edge.
+2.  The reset assertions are rewritten with correct timing:
+    *   The master's reset outputs are checked on the cycle when `PRESETn` is known to have been low.
+    *   The slave's registered reset outputs are checked on the cycle after they have been reset, using `$past(PRESETn == 0)` as a simple and robust trigger.
+3.  All properties are consolidated into a single `always` block, guarded by `fv_past_valid`, for clarity and correctness.
+
+These changes correct the faulty properties without weakening any valid checks.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal (
+    input wire PCLK
+);
+    // DUT Inputs from the external system
+    (* anyseq *) reg SWRITE;
+    (* anyseq *) reg [31:0] SADDR;
+    (* anyseq *) reg [31:0] SWDATA;
+    (* anyseq *) reg [3:0] SSTRB;
+    (* anyseq *) reg [2:0] SPROT;
+    (* anyseq *) reg transfer;
+
+    // DUT inputs for clock and reset
+    reg PRESETn;
+
+    // APB interface wires
+    wire PSEL;
+    wire PENABLE;
+    wire PWRITE;
+    wire [31:0] PADDR;
+    wire [31:0] PWDATA;
+    wire [3:0] PSTRB;
+    wire [2:0] PPROT;
+    wire PREADY;
+    wire PSLVERR;
+    wire [31:0] PRDATA;
+
+    // Instantiate Master and Slave directly
+    APB_Master master (
+        .PCLK(PCLK),
+        .PRESETn(PRESETn),
+        .SWRITE(SWRITE),
+        .SADDR(SADDR),
+        .SWDATA(SWDATA),
+        .SSTRB(SSTRB),
+        .SPROT(SPROT),
+        .transfer(transfer),
+        .PSEL(PSEL),
+        .PENABLE(PENABLE),
+        .PWRITE(PWRITE),
+        .PADDR(PADDR),
+        .PWDATA(PWDATA),
+        .PSTRB(PSTRB),
+        .PPROT(PPROT),
+        .PREADY(PREADY),
+        .PSLVERR(PSLVERR)
+    );
+
+    APB_Slave slave (
+        .PCLK(PCLK),
+        .PRESETn(PRESETn),
+        .PSEL(PSEL),
+        .PENABLE(PENABLE),
+        .PWRITE(PWRITE),
+        .PADDR(PADDR),
+        .PWDATA(PWDATA),
+        .PSTRB(PSTRB),
+        .PPROT(PPROT),
+        .PREADY(PREADY),
+        .PSLVERR(PSLVERR),
+        .PRDATA(PRDATA)
+    );
+
+    // --- Helper signals for protocol phases ---
+    wire SETUP_PHASE = PSEL && !PENABLE;
+    wire ACCESS_PHASE = PSEL && PENABLE;
+    wire XFER_DONE = ACCESS_PHASE && PREADY;
+
+    // --- Formal verification state and reset generation ---
+    reg fv_first_cycle;
+    reg fv_past_valid; // Guards against checks at time 0
+
+    initial begin
+        fv_first_cycle = 1;
+        fv_past_valid = 0;
+    end
+
+    always @(posedge PCLK) begin
+        if (fv_first_cycle) begin
+            PRESETn <= 0;
+            fv_first_cycle <= 0;
+        end else begin
+            PRESETn <= 1;
+        end
+        fv_past_valid <= 1;
+    end
+
+    // --- Assumptions (Environment Constraints) ---
+    // Assumed requester contract: The system driving the master provides inputs
+    // that are stable when a transfer is initiated. When `transfer` is asserted,
+    // the associated address in `SADDR` is assumed to be within the valid 4KB
+    // range of the 1024-word slave memory. Other S* inputs are unconstrained.
+    always @(posedge PCLK) begin
+        if (fv_past_valid && transfer) begin
+            // a_valid_addr: Constrain SADDR for transfers to be in the slave's 4KB range.
+            assume(SADDR[31:12] == 0);
+        end
+    end
+
+    // --- Data Integrity Checker ---
+    (* anyconst *) reg [9:0] watched_addr;
+    reg [31:0] expected_data;
+    reg [3:0] byte_valid;
+
+    initial begin
+        byte_valid = 4'b0000;
+    end
+
+    always @(posedge PCLK) begin
+        if (!PRESETn) begin
+            byte_valid <= 4'b0000;
+        end else if (fv_past_valid) begin
+            // Model a correct byte-wise write to our scoreboard.
+            // This happens on the cycle AFTER the write completes.
+            if ($past(XFER_DONE && PWRITE && PADDR[11:2] == watched_addr)) begin
+                if ($past(PSTRB[0])) begin
+                    expected_data[7:0] <= $past(PWDATA[7:0]);
+                    byte_valid[0] <= 1'b1;
+                end
+                if ($past(PSTRB[1])) begin
+                    expected_data[15:8] <= $past(PWDATA[15:8]);
+                    byte_valid[1] <= 1'b1;
+                end
+                if ($past(PSTRB[2])) begin
+                    expected_data[23:16] <= $past(PWDATA[23:16]);
+                    byte_valid[2] <= 1'b1;
+                end
+                if ($past(PSTRB[3])) begin
+                    expected_data[31:24] <= $past(PWDATA[31:24]);
+                    byte_valid[3] <= 1'b1;
+                end
+            end
+
+            // Check readback on a completed legal read transaction.
+            // PRDATA is registered, so it is valid on the cycle after the read completes.
+            if ($past(XFER_DONE && !PWRITE && PSTRB == 4'b0 && PADDR[11:2] == watched_addr)) begin
+                // assert_data_integrity_byte0: Check byte 0 if it has been written
+                if ($past(byte_valid[0])) begin
+                    assert(PRDATA[7:0] == $past(expected_data[7:0]));
+                end
+                // assert_data_integrity_byte1: Check byte 1 if it has been written
+                if ($past(byte_valid[1])) begin
+                    assert(PRDATA[15:8] == $past(expected_data[15:8]));
+                end
+                // assert_data_integrity_byte2: Check byte 2 if it has been written
+                if ($past(byte_valid[2])) begin
+                    assert(PRDATA[23:16] == $past(expected_data[23:16]));
+                end
+                // assert_data_integrity_byte3: Check byte 3 if it has been written
+                if ($past(byte_valid[3])) begin
+                    assert(PRDATA[31:24] == $past(expected_data[31:24]));
+                end
+            end
+        end
+    end
+
+    // --- Helper state for cover properties ---
+    reg saw_full_write_to_watched_addr;
+    initial saw_full_write_to_watched_addr = 0;
+    always @(posedge PCLK) if (!PRESETn) saw_full_write_to_watched_addr <= 0;
+
+    // --- Assertions and Covers ---
+    always @(posedge PCLK) begin
+        if (fv_past_valid) begin
+            // --- Reset Checks ---
+            // On the cycle after PRESETn was asserted low. Master is in IDLE.
+            if ($past(PRESETn == 0)) begin
+                // assert_master_reset_outputs: Master control signals are low after reset.
+                assert(PSEL == 0);
+                assert(PENABLE == 0);
+                // assert_slave_reset_outputs: Slave registered outputs are zero after reset.
+                assert(PRDATA == 0);
+                assert(PSLVERR == 0);
+            end
+
+            // cover_reset_active: Cover the cycle where reset is active.
+            if (!PRESETn) begin
+                cover(1);
+            end
+            // cover_reset_release: Cover the first cycle after reset de-assertion.
+            if (PRESETn && !$past(PRESETn)) begin
+                cover(1);
+            end
+
+            // --- Protocol Checks ---
+            // assert_penable_in_access: PENABLE should only be high when PSEL is also high
+            if (PENABLE) begin
+                assert(PSEL);
+            end
+
+            // assert_addr_ctrl_stable: Address and control must be stable from SETUP to end of ACCESS
+            if ($past(SETUP_PHASE) && ACCESS_PHASE) begin
+                assert($stable(PADDR));
+                assert($stable(PWRITE));
+                assert($stable(PPROT));
+                assert($stable(PSTRB));
+                assert($stable(PWDATA));
+            end
+
+            // --- Slave Behavior Checks ---
+            // assert_pready: Slave must assert PREADY in ACCESS phase (no wait states)
+            if (ACCESS_PHASE) begin
+                assert(PREADY);
+            end
+
+            // assert_read_error_on_access: A read with non-zero PSTRB in ACCESS must cause PSLVERR
+            if ($past(ACCESS_PHASE && !PWRITE && PSTRB != 4'b0)) begin
+                assert(PSLVERR);
+            end
+
+            // assert_no_read_error_on_setup: A read with non-zero PSTRB in SETUP must NOT cause PSLVERR
+            // The slave error logic is only gated by PSEL, which is a bug. This assertion should fail.
+            if ($past(SETUP_PHASE && !PWRITE && PSTRB != 4'b0)) begin
+                 assert(!PSLVERR);
+            end
+
+            // --- Cover Properties ---
+            if (SETUP_PHASE) cover(1); // cover_setup
+            if (ACCESS_PHASE) cover(1); // cover_access
+            if ($past(XFER_DONE && PWRITE)) cover(1); // cover_write_complete
+            if ($past(XFER_DONE && !PWRITE)) cover(1); // cover_read_complete
+            if ($past(XFER_DONE) && SETUP_PHASE) cover(1); // cover_back_to_back
+            if (ACCESS_PHASE && !PWRITE && PSTRB != 4'b0) cover(1); // cover_read_error
+            if ($past(XFER_DONE && PWRITE && PADDR[11:2] == watched_addr)) cover(1); // cover_data_write
+            if ($past(XFER_DONE && !PWRITE && PADDR[11:2] == watched_addr) && |$past(byte_valid)) cover(1); // cover_data_read
+
+            // cover_partial_overwrite: Cover a partial write after a full write to the same address.
+            if ($past(XFER_DONE && PWRITE && PSTRB != 4'b1111 && PSTRB != 4'b0000 && PADDR[11:2] == watched_addr) && saw_full_write_to_watched_addr) begin
+                cover(1);
+                saw_full_write_to_watched_addr <= 0;
+            end else if ($past(XFER_DONE && PWRITE && PSTRB == 4'b1111 && PADDR[11:2] == watched_addr)) begin
+                saw_full_write_to_watched_addr <= 1;
+            end
+        end
+    end
+endmodule
+```

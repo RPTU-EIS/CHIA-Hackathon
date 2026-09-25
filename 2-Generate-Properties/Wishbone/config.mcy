@@ -1,0 +1,60 @@
+[options]
+size 40
+# Fixed (not auto-generated) seed: `mutate -list` is otherwise
+# reseeded from the current time on every `mcy init`, so two
+# rounds' coverage numbers would be sampled from DIFFERENT
+# mutation subsets - a real noise source (see module docstring's
+# note on this). Confirmed via a real local diff (two `mcy init`
+# runs, same seed, deliberately DIFFERENT checker content each
+# time) that a fixed seed reproduces the exact same mutation
+# TARGETS round to round (identical -src/-port/-portbit/-mode
+# for all 40, in the same order) even though the
+# checker changed - only yosys's internal auto-numbered cell
+# names shifted (cosmetic, from more/fewer checker-side cells
+# existing ahead of them at elaboration time), which doesn't
+# affect what's being mutated. This is safe specifically because
+# the candidate pool (`a:src=wishbone_ram.sv:*`) is DUT-only and the
+# DUT never changes across a run - re-seeding is what would be
+# needed if the pool itself could shift.
+seed 424242
+# DUT-only mutation candidates, filtered by SOURCE FILE
+# attribute rather than dotted-hierarchy name matching - see
+# module docstring's MUTATION SELECTION note. Confirmed
+# empirically (local docker repro) that a `wishbone_ram_checker/
+# dut.*`-style dotted select only ever matches
+# a handful of NAMED wires post-flatten (port-driven regs like
+# ack_o_reg, the mem cell itself) - every anonymous gate cell
+# yosys generates for the DUT's actual combinational logic
+# (the AND/NOT/mux cells that do the real work) never gets a
+# `dut.`-prefixed name, so that selection style
+# silently starved `mutate -list` down to almost nothing. This
+# is an `a:` (attribute) selection instead, matching every
+# object (named or anonymous) whose `-src` attribute starts
+# with 'wishbone_ram.sv' - naturally excludes the checker's own
+# logic too (a different source file), no separate diff/%d
+# exclusion needed.
+select a:src=wishbone_ram.sv:*
+tags COVERED UNCOVERED
+
+[script]
+read_verilog -formal -sv wishbone_ram.sv wishbone_ram_checker.sv
+prep -top wishbone_ram_checker
+flatten
+
+[files]
+wishbone_ram.sv
+wishbone_ram_checker.sv
+
+[logic]
+if result("bmc") == "FAIL":
+    tag("COVERED")
+else:
+    tag("UNCOVERED")
+
+[report]
+if tags("COVERED")+tags("UNCOVERED"):
+    print("Mutation coverage: %.2f%%" % (100.0*tags("COVERED")/(tags("COVERED")+tags("UNCOVERED"))))
+
+[test bmc]
+expect PASS FAIL
+run bash $PRJDIR/test_bmc.sh

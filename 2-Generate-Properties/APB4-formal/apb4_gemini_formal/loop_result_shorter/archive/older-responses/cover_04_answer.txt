@@ -1,0 +1,239 @@
+The `cover` task failed because one coverage goal, `COV_partial_overwrite`, was unreachable within the specified depth. This goal is intended to verify a partial write to an address that was previously subject to a full write.
+
+**Diagnosis:**
+
+The failing cover statement is:
+`cover((PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PSTRB != 4'b1111) && f_full_write_done_for_cover);`
+
+This requires two conditions to be met simultaneously in a single clock cycle `T`:
+1.  A partial write to `watched_addr` completes (`PSEL && PENABLE && PREADY && PWRITE ... && PSTRB != 4'b1111`).
+2.  The flag `f_full_write_done_for_cover` is high.
+
+The logic for setting this flag was:
+`if ($past(PSEL && PENABLE ... && PSTRB == 4'b1111)) begin f_full_write_done_for_cover <= 1'b1; end`
+
+This implementation has a 1-cycle latency: if a full write completes at cycle `T-1`, the flag `f_full_write_done_for_cover` becomes high at cycle `T`. For the cover goal to be met, a partial write would also need to complete at cycle `T`.
+
+However, two separate APB write transfers cannot complete on consecutive clock cycles. An APB transfer requires at least a `SETUP` cycle followed by an `ACCESS` cycle. A back-to-back sequence is `... -> ACCESS (end of transfer 1) -> SETUP (start of transfer 2) -> ACCESS (end of transfer 2) -> ...`. Therefore, it's impossible for one transfer to complete at `T-1` and another to complete at `T`. The 1-cycle latency in the flag's logic created an unreachable scenario.
+
+**Repair:**
+
+The fix is to adjust the flag logic to have a 2-cycle latency, as suggested by the property's original comment. This allows for a valid back-to-back transfer sequence where the cover condition can be met:
+*   **T-2:** A full write to `watched_addr` completes.
+*   **T-1:** The master enters the `SETUP` phase for a new partial write to the same address.
+*   **T:** The master enters the `ACCESS` phase, and the partial write completes. Simultaneously, the flag `f_full_write_done_for_cover` becomes high, reflecting the event that occurred two cycles prior at `T-2`.
+
+This is achieved by introducing a new pipeline register, `f_full_write_completes_past`, to delay the full-write-completion signal by one cycle before it is used to set the sticky `f_full_write_done_for_cover` flag.
+
+The change is confined to the formal harness (`apb4_formal.sv`) and does not alter any assertions, assumptions, or the cover statement itself, only the logic that enables it.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(
+    input wire PCLK,
+    // DUT Inputs from environment
+    input wire PRESETn,
+    // Symbolic inputs from testbench to drive the master
+    input wire SWRITE,
+    input wire [31:0] SADDR,
+    input wire [31:0] SWDATA,
+    input wire [3:0] SSTRB,
+    input wire [2:0] SPROT,
+    input wire transfer
+);
+    // Wires connecting Master and Slave
+    wire PSEL, PENABLE, PWRITE;
+    wire [31:0] PADDR, PWDATA, PRDATA;
+    wire [3:0] PSTRB;
+    wire [2:0] PPROT;
+    wire PREADY, PSLVERR;
+
+    // Instantiate Master and Slave directly
+    APB_Master master (
+        .PCLK(PCLK), .PRESETn(PRESETn), .SWRITE(SWRITE), .SADDR(SADDR), .SWDATA(SWDATA),
+        .SSTRB(SSTRB), .SPROT(SPROT), .transfer(transfer), .PSEL(PSEL), .PENABLE(PENABLE),
+        .PWRITE(PWRITE), .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT),
+        .PREADY(PREADY), .PSLVERR(PSLVERR)
+    );
+
+    APB_Slave slave (
+        .PCLK(PCLK), .PRESETn(PRESETn), .PSEL(PSEL), .PENABLE(PENABLE), .PWRITE(PWRITE),
+        .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT), .PREADY(PREADY),
+        .PSLVERR(PSLVERR), .PRDATA(PRDATA)
+    );
+
+    // Formal verification logic
+    reg [4:0] f_clk_count = 0;
+    reg f_past_valid = 0;
+
+    // Data integrity checker model
+    (* anyconst *) reg [9:0] watched_addr;
+    reg [31:0] expected_data;
+    reg [3:0] byte_valid;
+    reg f_full_write_done_for_cover;
+    // REPAIR: Add a pipeline register to create a 2-cycle latency for the cover flag.
+    reg f_full_write_completes_past;
+    
+    initial begin
+        f_clk_count = 0;
+        f_past_valid = 0;
+        byte_valid = 4'b0;
+        f_full_write_done_for_cover = 1'b0;
+        // REPAIR: Initialize the new pipeline register.
+        f_full_write_completes_past = 1'b0;
+    end
+
+    always @(posedge PCLK) begin
+        // --- Formal Harness State ---
+        if (f_clk_count < 31) begin
+            f_clk_count <= f_clk_count + 1;
+        end
+        // Enable $past checks after the first cycle
+        if (f_clk_count == 1) begin
+            f_past_valid <= 1;
+        end
+
+        // A_PRESETn: Assume reset is asserted low for one cycle at the beginning.
+        assume(PRESETn == (f_clk_count == 0 ? 1'b0 : 1'b1));
+
+        // --- DUT Reset Behavior ---
+        if (!PRESETn) begin
+            // C_master_reset_outputs: Master outputs are zero during reset.
+            assert(PSEL == 0);
+            assert(PENABLE == 0);
+            // C_slave_reset_outputs: Slave outputs are zero during reset.
+            assert(PSLVERR == 0);
+            assert(PRDATA == 0);
+        end
+
+        // --- Data Integrity Model Update ---
+        if (!PRESETn) begin
+            expected_data <= 32'b0;
+            byte_valid <= 4'b0;
+            f_full_write_done_for_cover <= 1'b0;
+            // REPAIR: Reset the new pipeline register.
+            f_full_write_completes_past <= 1'b0;
+        end else if (f_past_valid) begin
+            // On a completed write to the watched address, update our model.
+            if ($past(PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr)) begin
+                expected_data <= {
+                    ($past(PSTRB[3])) ? $past(PWDATA[31:24]) : expected_data[31:24],
+                    ($past(PSTRB[2])) ? $past(PWDATA[23:16]) : expected_data[23:16],
+                    ($past(PSTRB[1])) ? $past(PWDATA[15:8])  : expected_data[15:8],
+                    ($past(PSTRB[0])) ? $past(PWDATA[7:0])   : expected_data[7:0]
+                };
+                byte_valid <= byte_valid | $past(PSTRB);
+            end
+
+            // REPAIR: Implement 2-cycle latency logic for the cover flag.
+            // This makes the COV_partial_overwrite scenario reachable.
+            // Stage 1: Register if a full write completed in the current cycle.
+            f_full_write_completes_past <= (PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PSTRB == 4'b1111);
+
+            // Stage 2: If a full write completed in the previous cycle (was registered), set the sticky flag.
+            if (f_full_write_completes_past) begin
+                f_full_write_done_for_cover <= 1'b1;
+            end
+        end
+
+        // --- Protocol Assertions (post-reset) ---
+        if (f_past_valid && $past(PRESETn)) begin
+            // A_SADDR_in_range: Assume requester provides a valid address.
+            assume(SADDR < 1024);
+
+            // A_S_inputs_stable_during_setup: Requester must hold inputs stable during SETUP phase.
+            if (PSEL && !PENABLE) begin
+                assume($stable(SADDR));
+                assume($stable(SWDATA));
+                assume($stable(SWRITE));
+                assume($stable(SSTRB));
+                assume($stable(SPROT));
+            end
+
+            // C_pready_is_correct: Slave asserts PREADY in ACCESS phase (no wait states).
+            assert(PREADY == (PSEL && PENABLE));
+
+            // C_control_stability: APB signals must be stable from SETUP to ACCESS transition.
+            if ($past(PSEL && !PENABLE) && (PSEL && PENABLE)) begin
+                assert($stable(PADDR));
+                assert($stable(PWRITE));
+                assert($stable(PSTRB));
+                assert($stable(PPROT));
+                if ($past(PWRITE)) begin
+                    assert($stable(PWDATA));
+                end
+            end
+
+            // C_pslverr_on_invalid_read: Slave must error on read with non-zero PSTRB.
+            // PSLVERR is registered, so it is asserted one cycle after the error condition.
+            if ($past(PSEL && PENABLE && !PWRITE && PSTRB != 4'b0)) begin
+                assert(PSLVERR == 1);
+            end
+
+            // C_no_pslverr_on_valid_access: Slave must not error on valid accesses.
+            if ($past(PSEL && PENABLE && (PWRITE || (!PWRITE && PSTRB == 4'b0)))) begin
+                assert(PSLVERR == 0);
+            end
+
+            // C_data_integrity: On a legal read, PRDATA must match our model for known bytes.
+            // This assertion is expected to FAIL, exposing the slave's write logic bug.
+            if ($past(PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0 && PADDR[9:0] == watched_addr)) begin
+                if (byte_valid[0]) assert(PRDATA[7:0]   == expected_data[7:0]);
+                if (byte_valid[1]) assert(PRDATA[15:8]  == expected_data[15:8]);
+                if (byte_valid[2]) assert(PRDATA[23:16] == expected_data[23:16]);
+                if (byte_valid[3]) assert(PRDATA[31:24] == expected_data[31:24]);
+            end
+
+            // --- Cover Properties ---
+            cover(!PRESETn); // COV_reset
+            cover(PSEL && !PENABLE); // COV_setup_phase
+            cover(PSEL && PENABLE);  // COV_access_phase
+            cover(PSEL && PENABLE && PREADY && PWRITE); // COV_write_complete
+            cover(PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 4'b0); // COV_read_complete
+            cover($past(PSEL && PENABLE && PREADY) && (PSEL && !PENABLE)); // COV_back_to_back
+            cover(PSLVERR == 1); // COV_pslverr
+            cover($past(PSEL && PENABLE && PREADY && !PWRITE && PSTRB == 0 && PADDR[9:0] == watched_addr) && |byte_valid); // COV_data_readback
+            
+            // COV_partial_overwrite: Cover a partial write that happens *after* a full write.
+            // This requires a partial write to complete in the current cycle, and for the
+            // f_full_write_done_for_cover flag (which has a 2-cycle latency) to be set.
+            // This requires a sequence of FULL_WRITE(at T-2 or earlier) -> PARTIAL_WRITE(at T).
+            cover((PSEL && PENABLE && PREADY && PWRITE && PADDR[9:0] == watched_addr && PSTRB != 4'b1111) && f_full_write_done_for_cover);
+        end
+    end
+endmodule
+```

@@ -1,0 +1,27 @@
+REVIEW_OK
+
+The current formal harness and its properties have been audited against the design brief and are correctly implemented.
+
+- **Reset and History:** The harness correctly models an initial reset cycle (`PRESETn=0`) followed by normal operation (`PRESETn=1`). The use of `past_valid` and `past_PRESETn` guards ensures that properties are only checked after reset is released and a valid history cycle exists. The `c_reset_release` cover confirms that the first post-reset cycle is reachable.
+
+- **Scope and Constraints:** The requester's input `SADDR` is correctly constrained to the valid range 0-1023 via an `assume` property, fulfilling the design brief's requirement. The scoreboard's `watched_addr` is also constrained to this range, and all checks are properly gated by comparing the full 32-bit `PADDR` to `watched_addr`.
+
+- **Requirements Mapping:** The assertions map directly to the requirements in the brief:
+    - `a_data_byte*`: Checks data integrity for legal reads (`PSTRB==0`), comparing read data against an independent scoreboard model.
+    - `a_illegal_read_slverr`: Checks that an invalid read (`PSTRB!=0`) correctly results in a slave error.
+    - `a_no_slverr_on_write`: Checks that writes do not produce a slave error, as specified.
+    The harness does not invent requirements, such as mandating an error for zero-strobe writes.
+
+- **Scoreboard Model:** The `expected_data` model correctly implements the byte-lane preservation requirement for writes. It updates only the bytes specified by `PSTRB`, preserving the others. This model is independent of the slave's buggy `case(PSTRB)` implementation, which will allow the `a_data_byte*` assertions to fail during BMC and expose the RTL bugs.
+
+- **Clock Timing:** The property checks are correctly timed. An assertion fires at the end of the ACCESS phase, comparing the `PRDATA` on the bus. This `PRDATA` was latched inside the slave during the preceding SETUP phase, so the check correctly validates the data for that transaction. The timing logic is sound even for back-to-back transfers.
+
+  **Example Timing Trace: Back-to-Back Reads to `watched_addr`**
+  | Cycle | Phase      | PADDR          | Slave Action @posedge         | PRDATA (on bus) | Checker Action @posedge                                                                 |
+  |-------|------------|----------------|-------------------------------|-----------------|-----------------------------------------------------------------------------------------|
+  | T0    | SETUP A    | `watched_addr` | `PRDATA_reg <= Cache[addr]`   | (previous)      | -                                                                                       |
+  | T1    | ACCESS A   | `watched_addr` | `PRDATA_reg <= Cache[addr]`   | Data for A      | `read_complete` true. `$past(SETUP A)` true. `assert(PRDATA == expected_data)` fires.      |
+  | T2    | SETUP B    | `watched_addr` | `PRDATA_reg <= Cache[addr]`   | Data for A      | -                                                                                       |
+  | T3    | ACCESS B   | `watched_addr` | `PRDATA_reg <= Cache[addr]`   | Data for B      | `read_complete` true. `$past(SETUP B)` true. `assert(PRDATA == expected_data)` fires.      |
+
+The harness is well-constructed and ready for the `bmc` task.

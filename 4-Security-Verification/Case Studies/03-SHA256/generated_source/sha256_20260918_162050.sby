@@ -1,0 +1,13 @@
+[options]
+mode prove
+
+[engines]
+smtbmc
+
+[script]
+read_verilog -sv sha256.v sha256_miter.sv
+prep -top sha256_miter
+
+[files]
+sha256.v
+sha256_miter.sv

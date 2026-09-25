@@ -1,0 +1,16 @@
+[options]
+mode prove
+
+[engines]
+smtbmc
+
+[script]
+plugin -i ghdl
+ghdl --std=08 -fsynopsys modmult.vhd rsacypher.vhd -e RSACypher
+read_verilog -sv rsacypher_miter.sv
+prep -top rsacypher_miter
+
+[files]
+modmult.vhd
+rsacypher.vhd
+rsacypher_miter.sv

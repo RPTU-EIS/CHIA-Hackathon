@@ -1,0 +1,15 @@
+[tasks]
+dit_check
+
+[options]
+mode prove
+[engines]
+abc pdr
+
+[script]
+read_verilog -sv sha1.v sha1_miter.sv
+prep -top sha1_miter
+
+[files]
+sha1.v
+sha1_miter.sv

@@ -1,0 +1,17 @@
+[tasks]
+cov
+
+[options]
+mode cover
+depth 10
+
+[engines]
+smtbmc
+
+[script]
+read_verilog -formal -sv wishbone_ram.sv wishbone_ram_checker.sv
+prep -top wishbone_ram_checker
+
+[files]
+wishbone_ram.sv
+wishbone_ram_checker.sv

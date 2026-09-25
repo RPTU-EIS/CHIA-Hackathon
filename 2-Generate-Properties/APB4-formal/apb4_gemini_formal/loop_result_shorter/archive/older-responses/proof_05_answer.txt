@@ -1,0 +1,20 @@
+BUG_REPORT
+The BMC run failed with multiple assertions related to data integrity: `a_data_integrity_b0`, `a_data_integrity_b1`, `a_data_integrity_b2`, and `a_data_integrity_b3`. These failures all point to a single root-cause RTL bug in the `APB_Slave` module. The formal properties correctly model the requirement that unselected bytes in memory must be preserved during a write operation, but the slave RTL fails to do this.
+
+**Root Cause Analysis:**
+
+*   **Requirement:** The design brief specifies that for write operations, "PSTRB selects bytes to update; unselected bytes must be preserved."
+*   **Failing Assertions:** The `a_data_integrity_*` assertions check read data against a shadow memory model. This model correctly implements byte-preservation on writes. All four byte-lane assertions failed, indicating that a partial write corrupts all un-strobed bytes.
+    *   `a_data_integrity_b3: assert(PRDATA[31:24] == r_expected_data[31:24]);`
+    *   `a_data_integrity_b2: assert(PRDATA[23:16] == r_expected_data[23:16]);`
+    *   `a_data_integrity_b1: assert(PRDATA[15:8]  == r_expected_data[15:8]);`
+    *   `a_data_integrity_b0: assert(PRDATA[7:0]   == r_expected_data[7:0]);`
+*   **Counterexample:** The BMC tool found a sequence that causes the failure:
+    1.  A full-word write to an address (e.g., `PSTRB=4'b1111`) populates the slave's memory and the formal checker's shadow model.
+    2.  A subsequent partial-word write to the same address (e.g., `PSTRB=4'b0001`) follows. The shadow model correctly updates only the selected byte (`PWDATA[7:0]`), preserving the other three bytes from the first write.
+    3.  The slave RTL, however, does not preserve the other bytes. For `PSTRB=4'b0001`, the faulty `case` statement executes `Cache[PADDR] <= {{24{PWDATA[7]}}, PWDATA[7:0]};`. This sign-extends `PWDATA[7]` to the upper 24 bits, overwriting and corrupting bytes 1, 2, and 3 of the stored word. Other `PSTRB` values have similar bugs, often writing zeroes or other incorrect data to unselected byte lanes.
+    4.  A final read from that address returns the corrupted data from the slave. This data mismatches the correctly preserved data in the shadow model, causing the `a_data_integrity_*` assertions for the un-strobed bytes to fail.
+*   **Faulty RTL Location:** `APB_Slave.v`, the `case (PSTRB)` statement inside the `always @(posedge PCLK)` block. This block incorrectly implements byte-strobed writes.
+*   **Suggested Repair (Prose):** The `case (PSTRB)` logic is fundamentally flawed and does not meet the byte-preservation requirement. It should be replaced with logic that updates memory on a byte-by-byte basis according to the strobes, leaving unselected bytes unchanged. For example, using four separate `if (PSTRB[i])` statements to update each byte lane of `Cache[PADDR]` individually would correctly implement the required behavior.
+
+The formal properties are valid as they correctly represent the design requirements. No changes to the properties or harness are needed.

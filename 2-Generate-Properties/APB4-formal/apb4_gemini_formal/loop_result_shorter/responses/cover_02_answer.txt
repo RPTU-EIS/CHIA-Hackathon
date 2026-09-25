@@ -1,0 +1,241 @@
+Based on the log analysis, the cover `c_read_after_write` is unreached at depth 10. This indicates a potential issue in the test harness logic that prevents the tool from constructing a valid trace for a read-after-write scenario.
+
+**1. Diagnosis of Unreached Cover**
+
+The unreached cover goal is defined as:
+```systemverilog
+// From line 141-144
+// Cover the data integrity assertion trigger for at least one known byte.
+if (read_complete && at_watched_addr && $past(saw_legal_read_setup_at_watched) && |known_bytes) begin
+    c_read_after_write: cover(1);
+end
+```
+This cover is intended to fire during the ACCESS phase of a legal read (`read_complete`), but only if a write to that address has occurred previously (`|known_bytes`) and the previous cycle was a legal read SETUP phase.
+
+The issue lies in the interaction between the helper register `saw_legal_read_setup_at_watched` and the `$past()` operator.
+
+- The register `saw_legal_read_setup_at_watched` is updated with a non-blocking assignment (`<=`) based on conditions in the APB SETUP phase:
+  ```systemverilog
+  // From line 92
+  saw_legal_read_setup_at_watched <= is_setup && !PWRITE && at_watched_addr && (PSTRB == 4'b0);
+  ```
+- This means if the SETUP conditions are met in cycle `T`, the register `saw_legal_read_setup_at_watched` will become `1` at the beginning of cycle `T+1`. The register itself acts as a one-cycle delay, correctly flagging that the previous cycle was a SETUP phase.
+
+- The cover condition, however, checks `$past(saw_legal_read_setup_at_watched)`. This asks for the value of the register in the *previous* cycle.
+  - In cycle `T+1` (the ACCESS phase), `saw_legal_read_setup_at_watched` is `1`. However, `$past(saw_legal_read_setup_at_watched)` refers to its value in cycle `T`, which was `0`.
+  - The condition `$past(saw_legal_read_setup_at_watched)` will only become true in cycle `T+2`, one cycle *after* the ACCESS phase.
+
+By that time, `read_complete` (which is true only during the ACCESS phase) will be false. Therefore, the combined condition can never be met, making the cover unreachable. The same temporal logic error exists in the data integrity assertion on line 107.
+
+**2. Proposed Correction**
+
+To fix this, the `$past()` operator must be removed. The register `saw_legal_read_setup_at_watched` already provides the necessary one-cycle delay to align the SETUP event with the ACCESS phase check. The corrected conditions will use the register's current value directly.
+
+**Corrected Cover:**
+```systemverilog
+// Cover the data integrity assertion trigger for at least one known byte.
+if (read_complete && at_watched_addr && saw_legal_read_setup_at_watched && |known_bytes) begin
+    c_read_after_write: cover(1);
+end
+```
+
+**Corrected Assertion:**
+```systemverilog
+// Check on the ACCESS cycle of a legal read to a watched address.
+if (read_complete && at_watched_addr && saw_legal_read_setup_at_watched) begin
+    // ... assertions ...
+end
+```
+These changes align the check to the correct cycle, making the read-after-write scenario reachable by the solver. No other changes are necessary.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 10
+--
+cover:
+mode cover
+depth 10
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(input wire PCLK);
+  // --- External System / Requester Driver ---
+  (* anyseq *) reg transfer, SWRITE;
+  (* anyseq *) reg [31:0] SADDR, SWDATA;
+  (* anyseq *) reg [3:0] SSTRB;
+  (* anyseq *) reg [2:0] SPROT;
+
+  // --- Reset and History Generation ---
+  reg first_cycle = 1'b1;
+  reg past_valid = 1'b0;
+  reg past_PRESETn = 1'b0;
+  wire PRESETn = !first_cycle;
+
+  always @(posedge PCLK) begin
+    first_cycle <= 1'b0;
+    past_valid <= 1'b1;
+    past_PRESETn <= PRESETn;
+  end
+
+  // --- DUT Connections ---
+  wire PSEL, PENABLE, PWRITE;
+  wire [31:0] PADDR, PWDATA, PRDATA;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire PREADY, PSLVERR;
+
+  APB_Master Master (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .SWRITE(SWRITE),
+      .SADDR(SADDR),
+      .SWDATA(SWDATA),
+      .SSTRB(SSTRB),
+      .SPROT(SPROT),
+      .transfer(transfer),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR)
+  );
+
+  APB_Slave Slave (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR),
+      .PRDATA(PRDATA)
+  );
+
+  // --- Requester Contract (Assumptions) ---
+  always @(posedge PCLK) begin
+    // Assume valid addresses are used for transfers after reset.
+    if (PRESETn && transfer) begin
+      assume(SADDR < 32'd1024);
+    end
+  end
+
+  // --- Properties and Scoreboard ---
+  (* anyconst *) reg [31:0] watched_addr;
+  initial assume(watched_addr[31:10] == 22'b0); // Constrain to 0..1023
+
+  reg [31:0] expected_data;
+  reg [3:0]  known_bytes;
+
+  wire is_setup   = PSEL && !PENABLE;
+  wire is_access  = PSEL && PENABLE;
+  wire write_complete = is_access && PWRITE && PREADY;
+  wire read_complete  = is_access && !PWRITE && PREADY;
+  wire at_watched_addr = (PADDR == watched_addr);
+  
+  reg saw_legal_read_setup_at_watched;
+
+  always @(posedge PCLK) begin
+    if (!PRESETn) begin
+      known_bytes <= 4'b0;
+      saw_legal_read_setup_at_watched <= 1'b0;
+      // expected_data does not need reset, its validity is tracked by known_bytes
+    end else begin
+      // --- Helper flag for legal read setup ---
+      saw_legal_read_setup_at_watched <= is_setup && !PWRITE && at_watched_addr && (PSTRB == 4'b0);
+
+      // --- Scoreboard Update ---
+      // Update on completed write to watched_addr. The model correctly preserves
+      // un-strobed bytes, which the RTL is suspected of not doing.
+      if (write_complete && at_watched_addr) begin
+        if (PSTRB[0]) expected_data[7:0]   <= PWDATA[7:0];
+        if (PSTRB[1]) expected_data[15:8]  <= PWDATA[15:8];
+        if (PSTRB[2]) expected_data[23:16] <= PWDATA[23:16];
+        if (PSTRB[3]) expected_data[31:24] <= PWDATA[31:24];
+        known_bytes <= known_bytes | PSTRB;
+      end
+
+      // --- Data Integrity Assertion (Legal Read) ---
+      // Check on the ACCESS cycle of a legal read to a watched address.
+      if (read_complete && at_watched_addr && saw_legal_read_setup_at_watched) begin
+        // Requirement: For a legal read, data from known-written bytes must match
+        // the expected value from the scoreboard.
+        if (known_bytes[0]) a_data_byte0: assert(PRDATA[7:0]   == expected_data[7:0]);
+        if (known_bytes[1]) a_data_byte1: assert(PRDATA[15:8]  == expected_data[15:8]);
+        if (known_bytes[2]) a_data_byte2: assert(PRDATA[23:16] == expected_data[23:16]);
+        if (known_bytes[3]) a_data_byte3: assert(PRDATA[31:24] == expected_data[31:24]);
+      end
+
+      // --- Illegal Read Error Assertion ---
+      // An invalid read is one where PWRITE=0 but PSTRB is not zero. This should
+      // be flagged by the slave with PSLVERR on the following cycle.
+      if (past_valid && $past(is_setup && !PWRITE && PSTRB != 4'b0)) begin
+        // Requirement: An invalid read (PSTRB != 0) should be flagged with PSLVERR.
+        a_illegal_read_slverr: assert(PSLVERR == 1'b1);
+      end
+    end
+  end
+
+  // --- Covers ---
+  always @(posedge PCLK) begin
+    if (past_valid) begin
+        if (!past_PRESETn && PRESETn) begin
+            c_reset_release: cover(1);
+        end
+
+        if (PRESETn) begin
+            // Cover a full write, a partial write, and a zero-strobe write to the watched address
+            if (write_complete && at_watched_addr) begin
+                c_full_write:   cover(PSTRB == 4'b1111);
+                c_partial_write:cover(PSTRB != 4'b1111 && PSTRB != 4'b0000);
+                c_zero_strobe_write: cover(PSTRB == 4'b0000);
+            end
+
+            // Cover the data integrity assertion trigger for at least one known byte.
+            if (read_complete && at_watched_addr && saw_legal_read_setup_at_watched && |known_bytes) begin
+                c_read_after_write: cover(1);
+            end
+
+            // Cover the trigger for the illegal read check
+            if (is_setup && !PWRITE && PSTRB != 4'b0) begin
+                c_illegal_read_setup: cover(1);
+            end
+        end
+    end
+  end
+
+endmodule
+```

@@ -1,0 +1,82 @@
+module property_checker
+  #(parameter WIDTH = 32)
+(
+  input clk_i,
+  input rst_i
+);
+
+  default clocking default_clk @(posedge clk_i); endclocking
+
+  function automatic logic [WIDTH-1:0] euclidean_gcd (
+    input logic [WIDTH-1:0] a_in,
+    input logic [WIDTH-1:0] b_in
+  );
+    logic [WIDTH-1:0] a, b, temp;
+
+    begin
+      a = a_in;
+      b = b_in;
+
+      for (int i = 0; i < 5 * WIDTH * $log10(2); i++) begin
+        if (b > 0) begin 
+          temp = b;
+          b = a % b;
+          a = temp;
+        end
+      end
+
+      return a;
+    end
+  endfunction
+
+  sequence reset_sequence;
+    (rst_i == 1'b1);
+  endsequence
+
+
+  property reset_p;
+    reset_sequence
+  |=>
+    ##0 (gcd_binary.ready_o == 1'b1) && (gcd_binary.done_o == 1'b0);
+  endproperty
+  reset_p_a: assert property (reset_p);
+
+
+  property idle_p;
+    ##0 (gcd_binary.ready_o == 1'b1)
+    ##0 (gcd_binary.start_i == 1'b0)
+  |=>
+    ##0 (gcd_binary.ready_o == 1'b1) && (gcd_binary.done_o == 1'b0);
+  endproperty
+  idle_p_a: assert property (disable iff (rst_i) idle_p);
+
+
+  property gcd_p;
+  logic [31:0] op_a, op_b;
+    ##0 (gcd_binary.ready_o == 1'b1)
+    ##0 (gcd_binary.start_i == 1'b1, op_a = gcd_binary.a_i, op_b = gcd_binary.b_i)
+  |=>
+    ##0 (gcd_binary.ready_o == 1'b0) && (gcd_binary.done_o == 1'b0) [*1:2*WIDTH]
+    ##1
+    ##0 (gcd_binary.ready_o == 1'b0) && (gcd_binary.done_o == 1'b1)
+    ##0 (gcd_binary.res_o == euclidean_gcd(op_a, op_b))
+    ##1
+    ##0 (gcd_binary.ready_o == 1'b1) && (gcd_binary.done_o == 1'b0);
+  endproperty
+  gcd_p_a: assert property (disable iff (rst_i) gcd_p);
+
+
+  // Verifying the worst-case latency
+  property wcl_p(n);
+    ##0 gcd_binary.ready_o == 1'b1
+    ##0 gcd_binary.start_i == 1'b1
+    ##1 gcd_binary.done_o == 1'b0 [*(n-1)]
+  |->
+    ##1 gcd_binary.done_o == 1'b1;
+  endproperty
+  wcl_p_a:    assert property (disable iff (rst_i) wcl_p(2*WIDTH+1));
+
+
+endmodule
+
+bind gcd_binary property_checker #(.WIDTH(WIDTH)) checker_bind(.clk_i(clk_i), .rst_i(rst_i));

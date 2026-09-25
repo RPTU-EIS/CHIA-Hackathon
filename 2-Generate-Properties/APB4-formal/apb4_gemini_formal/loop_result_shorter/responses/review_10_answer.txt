@@ -1,0 +1,33 @@
+REVIEW_OK
+The current formal harness is well-designed and correctly implements the verification strategy outlined in the design brief. It is ready for the BMC stage without modification.
+
+### Audit of Assertions
+
+1.  **Reset Guards & History**: The harness correctly generates a single-cycle active-low reset on the first clock cycle using a `first_cycle` flag. The `past_valid` register ensures that no temporal properties are checked before history is established, and it advances independently of reset state. Normal operation checks are correctly guarded by `past_valid && past_PRESETn`, which prevents them from firing during or immediately after reset. The `c_reset_release` cover confirms that the post-reset condition is reachable.
+
+2.  **Clock Timing**: Assertions are timed correctly relative to the APB protocol phases. The data integrity assertion triggers upon `read_complete` (in the ACCESS phase) and uses `$past(is_setup ...)` to ensure it is evaluating the result of a transaction that had a valid SETUP phase on the preceding cycle. This correctly correlates the cause (read request in SETUP) and effect (data available in ACCESS). The slave RTL updates `PRDATA` in the SETUP phase, and the harness correctly checks this value in the following ACCESS phase. The timing table below confirms this.
+
+3.  **Scope**: The environment is correctly constrained with `assume(SADDR < 32'd1024)` for new transfers initiated by the requester, as required. The `watched_addr` is a full 32-bit register, and all checks correctly use a full-width comparison (`PADDR == watched_addr`), ensuring that the verification is precisely targeted and not subject to aliasing.
+
+4.  **Requirements Conformance**:
+    *   **Data Integrity (`a_data_byte*`)**: Fulfills the requirement to check read data against an independent model for legal reads (`PSTRB==0`). It only checks bytes that are known to have been written (`known_bytes`).
+    *   **Invalid Read (`a_illegal_read_slverr`)**: Fulfills the requirement to check for a slave error on invalid reads (where `PSTRB != 0`).
+    *   **Write Behavior (`a_no_slverr_on_write`)**: This assertion checks that the slave implementation does not generate an error on write transfers. This correctly evaluates a specific RTL behavior, as directed by the brief, rather than assuming it.
+
+5.  **Scoreboard Model**: The scoreboard for `watched_addr` correctly models the byte-strobe preservation requirement ("unselected bytes must be preserved"). Its update logic (`if (PSTRB[i]) expected_data[7:0] <= ...`) is behaviorally independent of the slave's buggy `case(PSTRB)` implementation, which incorrectly performs sign-extension or zeroing of other bytes. This crucial independence enables the discovery of the data corruption bugs in the RTL.
+
+6.  **Assumptions**: The single assumption properly constrains the stimulus from the environment without forcing any DUT outputs, thereby not masking any bugs.
+
+7.  **Non-Tautology**: Every assertion has a corresponding `cover` statement that targets its exact trigger condition, proving that the scenarios being checked are reachable.
+
+### Read Timing Analysis
+
+This table demonstrates the checker's correct timing for a write-then-read sequence to `watched_addr`. The check occurs at cycle C+4, comparing the data returned by the slave with the expected value written at cycle C+1.
+
+| Cycle | Master State | PSEL | PENABLE | PADDR        | PWRITE | PSTRB | PRDATA     | `read_complete` | `$past(is_setup...)` | Assertion Firing             |
+|:------|:-------------|:----:|:-------:|:-------------|:------:|:-----:|:-----------|:---------------:|:--------------------:|:-----------------------------|
+| C     | SETUP        | 1    | 0       | watched\_addr| 1      | 1111  | X          | 0               | (invalid history)    | No                           |
+| C+1   | ACCESS       | 1    | 1       | watched\_addr| 1      | 1111  | X          | 0               | 0                    | No. Scoreboard updates.      |
+| C+2   | IDLE         | 0    | 0       | -            | -      | -     | X          | 0               | 0                    | No                           |
+| C+3   | SETUP        | 1    | 0       | watched\_addr| 0      | 0000  | `data_A`   | 0               | 0                    | No. Slave drives `PRDATA`.   |
+| C+4   | ACCESS       | 1    | 1       | watched\_addr| 0      | 0000  | `data_A`   | 1               | 1 (from C+3)         | Yes. Checks `PRDATA` vs `expected_data`. |

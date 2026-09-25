@@ -1,0 +1,254 @@
+REVIEW_FIX
+
+The current formal harness contains multiple timing errors in its assertions due to misunderstanding the registered outputs of the APB slave. The slave's `PRDATA` and `PSLVERR` outputs are updated on the clock edge following the bus cycle that determines their value. Assertions firing on that same clock edge will check the stale, pre-update values of these signals, leading to incorrect failures.
+
+Specifically, the following issues were found and have been corrected:
+1.  **`a_data_byte*` (Data Integrity):** This assertion checked `PRDATA` in the ACCESS cycle. However, the slave updates `PRDATA` at the *end* of the SETUP cycle. The correct value is first available on the bus *during* the ACCESS cycle, and therefore can only be checked on the next clock edge. The check has been delayed by one cycle.
+2.  **`a_illegal_read_slverr`:** This assertion for an error response on an invalid read suffered from the same one-cycle timing error as the data integrity check. `PSLVERR` is a registered output and the check was one cycle too early. This has also been delayed by one cycle.
+3.  **`a_no_slverr_on_write`:** This assertion also checked the registered `PSLVERR` output on the same cycle it was being updated by the slave, leading to a race condition where the old value would be checked. This check has also been delayed by one cycle.
+4.  **`a_prdata_stable_on_illegal_read`:** This assertion required `PRDATA` to be stable during an illegal read. The design brief does not mandate this, only that `PRDATA` does not need to be valid. Furthermore, this assertion would incorrectly fail in a valid back-to-back scenario where a legal read is followed by an illegal read, as `PRDATA` would change due to the first read. This unfounded and flawed assertion has been removed.
+
+The harness has been refactored to use dedicated trigger registers. These registers are set during the `ACCESS` phase of a transaction and are used in the following clock cycle to fire the corresponding assertions, ensuring the slave's registered outputs are sampled correctly. The covers have been updated to reflect these new triggers.
+
+### Read Timing Analysis (Corrected)
+
+Here is the edge-by-edge timing for a legal read that illustrates why the one-cycle delay is necessary.
+
+| Cycle | PCLK Edge | APB Phase | Relevant Signals | Checker/Slave Action |
+| :---- | :-------- | :-------- | :--------------- | :------------------- |
+| T     | `posedge` | SETUP     | `PSEL=1`, `PENABLE=0`, `PWRITE=0`, `PADDR=A` | Slave sees SETUP request for address A. |
+| T+1   | `posedge` | ACCESS    | `PSEL=1`, `PENABLE=1`, `PREADY=1` | Slave drives `PRDATA <= Cache[A]`. Checker sets `fire_check_legal_read <= 1` and latches `expected_data`. The assertion does *not* fire yet. `PRDATA` on the bus is now `Cache[A]`. |
+| T+2   | `posedge` | IDLE      | `PSEL=0`, `PENABLE=0` | The `fire_check_legal_read` flag is now `1`. The assertion `assert(PRDATA == expected_data_for_check)` fires, correctly comparing the stable `PRDATA` value from cycle T+1. |
+
+This corrected timing ensures that assertions verify the behavior as specified by the design brief without spurious failures.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 10
+--
+cover:
+mode cover
+depth 10
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v APB_Wrapper.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(input wire PCLK);
+  // --- External System / Requester Driver ---
+  (* anyseq *) reg transfer, SWRITE;
+  (* anyseq *) reg [31:0] SADDR, SWDATA;
+  (* anyseq *) reg [3:0] SSTRB;
+  (* anyseq *) reg [2:0] SPROT;
+
+  // --- Reset and History Generation ---
+  reg first_cycle = 1'b1;
+  reg past_valid = 1'b0;
+  reg past_PRESETn = 1'b0;
+  wire PRESETn = !first_cycle;
+
+  always @(posedge PCLK) begin
+    first_cycle <= 1'b0;
+    past_valid <= 1'b1;
+    past_PRESETn <= PRESETn;
+  end
+
+  // --- DUT Connections ---
+  wire PSEL, PENABLE, PWRITE;
+  wire [31:0] PADDR, PWDATA, PRDATA;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire PREADY, PSLVERR;
+
+  APB_Master Master (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .SWRITE(SWRITE),
+      .SADDR(SADDR),
+      .SWDATA(SWDATA),
+      .SSTRB(SSTRB),
+      .SPROT(SPROT),
+      .transfer(transfer),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR)
+  );
+
+  APB_Slave Slave (
+      .PCLK(PCLK),
+      .PRESETn(PRESETn),
+      .PSEL(PSEL),
+      .PENABLE(PENABLE),
+      .PWRITE(PWRITE),
+      .PADDR(PADDR),
+      .PWDATA(PWDATA),
+      .PSTRB(PSTRB),
+      .PPROT(PPROT),
+      .PREADY(PREADY),
+      .PSLVERR(PSLVERR),
+      .PRDATA(PRDATA)
+  );
+
+  // --- Requester Contract (Assumptions) ---
+  always @(posedge PCLK) begin
+    // Assume valid addresses are used for transfers after reset.
+    if (PRESETn && transfer) begin
+      assume(SADDR < 32'd1024);
+    end
+  end
+
+  // --- Properties and Scoreboard ---
+  (* anyconst *) reg [31:0] watched_addr;
+  initial assume(watched_addr[31:10] == 22'b0); // Constrain to 0..1023
+
+  reg [31:0] expected_data;
+  reg [3:0]  known_bytes;
+
+  wire is_setup   = PSEL && !PENABLE;
+  wire is_access  = PSEL && PENABLE;
+  wire at_watched_addr = (PADDR == watched_addr);
+
+  // Transaction completion signals (in ACCESS phase with PREADY)
+  wire write_complete = is_access && PWRITE && PREADY;
+  wire read_complete  = is_access && !PWRITE && PREADY;
+  
+  // --- Scoreboard, Check Triggers ---
+  
+  // Triggers for assertions that need to be delayed one cycle
+  reg fire_check_legal_read;
+  reg fire_check_illegal_read;
+  reg fire_check_write;
+  
+  // Latched data for delayed assertions
+  reg [31:0] expected_data_for_check;
+  reg [3:0]  known_bytes_for_check;
+
+  always @(posedge PCLK) begin
+    if (!PRESETn) begin
+      known_bytes <= 4'b0;
+      fire_check_legal_read <= 1'b0;
+      fire_check_illegal_read <= 1'b0;
+      fire_check_write <= 1'b0;
+    end else begin
+      // --- Scoreboard Update ---
+      // Update on completed write to watched_addr.
+      if (write_complete && at_watched_addr) begin
+        if (PSTRB[0]) expected_data[7:0]   <= PWDATA[7:0];
+        if (PSTRB[1]) expected_data[15:8]  <= PWDATA[15:8];
+        if (PSTRB[2]) expected_data[23:16] <= PWDATA[23:16];
+        if (PSTRB[3]) expected_data[31:24] <= PWDATA[31:24];
+        known_bytes <= known_bytes | PSTRB;
+      end
+
+      // --- Set up assertion triggers for the NEXT cycle ---
+      // These fire in the ACCESS phase to capture state for checking in the following cycle.
+
+      // 1. Legal read data integrity check
+      reg trigger_legal_read_now = 1'b0;
+      trigger_legal_read_now = past_valid && read_complete && at_watched_addr && $past(is_setup && !PWRITE && PSTRB == 4'b0 && at_watched_addr);
+      fire_check_legal_read <= trigger_legal_read_now;
+      if (trigger_legal_read_now) begin
+        expected_data_for_check <= expected_data;
+        known_bytes_for_check   <= known_bytes;
+      end
+
+      // 2. Illegal read PSLVERR check
+      fire_check_illegal_read <= past_valid && read_complete && $past(is_setup && !PWRITE && PSTRB != 4'b0);
+
+      // 3. Write PSLVERR check
+      fire_check_write <= write_complete;
+    end
+  end
+
+  // --- Assertions (Delayed) ---
+  always @(posedge PCLK) begin
+    // These check the registered slave outputs (PRDATA, PSLVERR) one cycle after the ACCESS phase
+    // to ensure the values have propagated through the slave's registers.
+    if (past_valid && past_PRESETn) begin // Guards for normal operation after reset release
+      
+      // Requirement: For a legal read, data from known-written bytes must match.
+      if (fire_check_legal_read) begin
+        if (known_bytes_for_check[0]) a_data_byte0: assert(PRDATA[7:0]   == expected_data_for_check[7:0]);
+        if (known_bytes_for_check[1]) a_data_byte1: assert(PRDATA[15:8]  == expected_data_for_check[15:8]);
+        if (known_bytes_for_check[2]) a_data_byte2: assert(PRDATA[23:16] == expected_data_for_check[23:16]);
+        if (known_bytes_for_check[3]) a_data_byte3: assert(PRDATA[31:24] == expected_data_for_check[31:24]);
+      end
+
+      // Requirement: An invalid read (PSTRB != 0) should be flagged with PSLVERR.
+      if (fire_check_illegal_read) begin
+        a_illegal_read_slverr: assert(PSLVERR == 1'b1);
+      end
+      
+      // Requirement: The slave design never generates an error on a write transaction.
+      if (fire_check_write) begin
+        a_no_slverr_on_write: assert(PSLVERR == 1'b0);
+      end
+    end
+  end
+
+  // --- Covers ---
+  always @(posedge PCLK) begin
+    if (past_valid) begin
+        if (!past_PRESETn && PRESETn) begin
+            c_reset_release: cover(1);
+        end
+
+        if (PRESETn) begin
+            // Cover a full write, a partial write, and a zero-strobe write to the watched address
+            if (write_complete && at_watched_addr) begin
+                c_full_write:   cover(PSTRB == 4'b1111);
+                c_partial_write:cover(PSTRB != 4'b1111 && PSTRB != 4'b0000);
+                c_zero_strobe_write: cover(PSTRB == 4'b0000);
+            end
+
+            // Cover the trigger for the data integrity assertion.
+            // This is the cycle *before* the assertion fires.
+            if (past_valid && read_complete && at_watched_addr && $past(is_setup && !PWRITE && PSTRB == 4'b0 && at_watched_addr) && |known_bytes) begin
+                c_read_after_write: cover(1);
+            end
+
+            // Cover the trigger for the illegal read assertion.
+            if (past_valid && read_complete && $past(is_setup && !PWRITE && PSTRB != 4'b0)) begin
+                c_illegal_read_access: cover(1);
+            end
+            
+            // Cover the trigger for the write error assertion.
+            if (write_complete) begin
+                c_any_write_complete: cover(1);
+            end
+        end
+    end
+  end
+
+endmodule
+```

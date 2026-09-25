@@ -1,0 +1,38 @@
+FROM ghcr.io/ucb-bar/chia:latest
+
+# --- Install SymbiYosys via the prebuilt OSS CAD Suite ------------------
+# The SymbiYosys docs recommend the OSS CAD Suite binary release over
+# building Yosys/sby/Boolector/Yices2 from source: it bundles sby, yosys,
+# yosys-smtbmc, ABC, and the supported SMT solvers in one archive.
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+         curl ca-certificates jq openssh-client rsync \
+    && rm -rf /var/lib/apt/lists/*
+
+# Resolve and download the latest linux-x64 OSS CAD Suite release.
+# (Pin a specific tag instead if you want reproducible builds across
+# rebuilds -- see the commented alternative below.)
+RUN set -eux; \
+    ASSET_URL=$(curl -fsSL https://api.github.com/repos/YosysHQ/oss-cad-suite-build/releases/latest \
+        | jq -r '.assets[] | select(.name | test("^oss-cad-suite-linux-x64-[0-9]+\\.tgz$")) | .browser_download_url'); \
+    echo "Downloading: ${ASSET_URL}"; \
+    curl -fsSL "${ASSET_URL}" -o /tmp/oss-cad-suite.tgz; \
+    mkdir -p /opt/oss-cad-suite; \
+    tar -xzf /tmp/oss-cad-suite.tgz -C /opt; \
+    rm /tmp/oss-cad-suite.tgz
+
+# --- Alternative: pin an exact release for reproducible builds ----------
+# ARG OSS_CAD_SUITE_DATE=20260201
+# RUN curl -fsSL \
+#       "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_SUITE_DATE}/oss-cad-suite-linux-x64-${OSS_CAD_SUITE_DATE}.tgz" \
+#       -o /tmp/oss-cad-suite.tgz \
+#     && mkdir -p /opt/oss-cad-suite \
+#     && tar -xzf /tmp/oss-cad-suite.tgz -C /opt \
+#     && rm /tmp/oss-cad-suite.tgz
+
+USER ray
+
+# Login shells don't source ~/.bashrc, so put the suite on PATH via ENV.
+# `sby`, `yosys`, `yosys-smtbmc`, and the bundled solvers all live here.
+ENV PATH="/opt/oss-cad-suite/bin:${PATH}"

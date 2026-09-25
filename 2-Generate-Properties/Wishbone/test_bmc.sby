@@ -1,0 +1,13 @@
+[options]
+mode bmc
+depth 20
+expect pass,fail
+
+[engines]
+smtbmc --keep-going bitwuzla
+
+[script]
+read_rtlil mutated.il
+
+[files]
+mutated.il

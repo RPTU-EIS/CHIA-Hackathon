@@ -1,0 +1,220 @@
+The provided formal verification setup fails with two assertions and a timeout. The task is to repair the build to make it executable and correctly check the design.
+
+**Diagnostics and Evidence**
+1.  **Assertion Failure `a_slave_reset_prdata`**: The log shows `Assert failed ... apb4_formal.sv:101`, which is `assert(PRDATA == 0)`. This check verifies that the slave's `PRDATA` output is zero on the clock cycle immediately after reset is de-asserted. It fails instantly, suggesting a fundamental setup issue rather than a complex counterexample. The harness instantiates the DUTs directly, but the SBY script also includes `APB_Wrapper.v`, which contains a second set of `APB_Master` and `APB_Slave` instances. This redundancy is unnecessary and could confuse the tool, possibly leading to this type of error. I will remove `APB_Wrapper.v` from the build script.
+
+2.  **Assertion Failure `a_data_integrity`**: The log shows `Assert failed ... apb4_formal.sv:149`, which is the data integrity check. This check compares read data against a behavioral model of the slave's memory. The checker's model update logic in the harness contains a common Verilog coding error: multiple non-blocking assignments (`<=`) to different bit-slices of the same register (`expected_data`, `byte_valid`) within a single `always` block. This creates a race condition where only the last assignment is guaranteed to take effect, making the model incorrect. The fix is to use a single assignment that conditionally combines new and old byte values.
+
+3.  **Timeout**: The timeout is likely a consequence of the `--keep-going` option. After the instant reset failure, the tool continues searching, and the buggy data integrity checker may contribute to state-space explosion, eventually leading to a timeout while searching for more failures.
+
+**Proposed Changes**
+1.  **SBY Script**: In `apb4.sby`, I will edit the `read_verilog` command to remove `APB_Wrapper.v`. The harness `apb4_formal.sv` correctly instantiates the DUTs, making the wrapper file superfluous.
+2.  **Harness `apb4_formal.sv`**: I will replace the faulty data integrity model update logic. The new logic uses a single non-blocking assignment with concatenations and ternary operators to correctly model a byte-wise update to the `expected_data` register. The `byte_valid` update is also corrected to use a single bitwise-OR operation. This ensures the shadow model is correct and robust, allowing it to accurately verify the RTL's behavior.
+
+These changes correct clear errors in the verification environment setup and the harness code, making the testbench executable and its checks meaningful.
+
+=== apb4.sby ===
+```text
+[tasks]
+prep
+bmc
+cover
+
+[options]
+prep:
+mode prep
+--
+bmc:
+mode bmc
+depth 20
+--
+cover:
+mode cover
+depth 20
+--
+
+[engines]
+prep: smtbmc
+cover: smtbmc
+bmc: smtbmc --keep-going
+
+[script]
+read_verilog -formal -sv -noautowire APB_Master.v APB_Slave.v apb4_formal.sv
+prep -top apb4_formal
+check -assert
+
+[files]
+APB_Master.v
+APB_Slave.v
+APB_Wrapper.v
+
+[file apb4_formal.sv]
+module apb4_formal(
+    input wire PCLK
+);
+
+// DUT interface signals
+reg PRESETn;
+// Requester (System) side inputs
+(* anyseq *) reg SWRITE;
+(* anyseq *) reg [31:0] SADDR, SWDATA;
+(* anyseq *) reg [3:0] SSTRB;
+(* anyseq *) reg [2:0] SPROT;
+(* anyseq *) reg transfer;
+
+// DUT outputs and internal APB signals
+wire [31:0] PRDATA;
+wire PSEL, PENABLE, PWRITE;
+wire [31:0] PADDR, PWDATA;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire PREADY, PSLVERR;
+
+// Instantiate Master and Slave directly as per instructions
+APB_Master Master (
+    .PCLK(PCLK), .PRESETn(PRESETn), .SWRITE(SWRITE), .SADDR(SADDR),
+    .SWDATA(SWDATA), .SSTRB(SSTRB), .SPROT(SPROT), .transfer(transfer),
+    .PSEL(PSEL), .PENABLE(PENABLE), .PWRITE(PWRITE), .PADDR(PADDR),
+    .PWDATA(PWDATA), .PSTRB(PSTRB), .PPROT(PPROT), .PREADY(PREADY),
+    .PSLVERR(PSLVERR)
+);
+
+APB_Slave Slave (
+    .PCLK(PCLK), .PRESETn(PRESETn), .PSEL(PSEL), .PENABLE(PENABLE),
+    .PWRITE(PWRITE), .PADDR(PADDR), .PWDATA(PWDATA), .PSTRB(PSTRB),
+    .PPROT(PPROT), .PREADY(PREADY), .PSLVERR(PSLVERR), .PRDATA(PRDATA)
+);
+
+// --- Formal Framework ---
+reg f_past_valid;
+// Data integrity checker state
+(* anyconst *) reg [9:0] watched_addr;
+reg [31:0] expected_data;
+reg [3:0] byte_valid;
+reg wrote_full_word;
+
+initial begin
+    // Start with reset asserted. It will be de-asserted on the first clock edge.
+    PRESETn = 1'b0;
+    // f_past_valid is false only during the first cycle (time 0 to first posedge).
+    f_past_valid = 1'b0;
+    // Initialize checker state.
+    byte_valid = 4'b0;
+    wrote_full_word = 1'b0;
+end
+
+always @(posedge PCLK) begin
+    // De-assert reset after the first cycle. It will stay de-asserted.
+    if (!f_past_valid) begin
+        PRESETn <= 1'b1;
+    end
+    // f_past_valid becomes true after the first clock edge and stays true.
+    f_past_valid <= 1'b1;
+
+    // --- Environment Assumptions ---
+    // e_addr_in_range: Assume address is always within the slave's memory range.
+    if (transfer) begin
+        assume(SADDR < 1024);
+    end
+
+    // e_no_transfer_in_reset: Assume a new transfer is not requested during reset.
+    if (!PRESETn) begin
+        assume(!transfer);
+    end
+
+    // --- Reset checks ---
+    // a_slave_reset_outputs: Slave outputs are cleared on the cycle after reset.
+    if (f_past_valid && $past(!PRESETn)) begin
+        assert(PRDATA == 0); // a_slave_reset_prdata
+        assert(PSLVERR == 0); // a_slave_reset_pslverr
+    end
+
+    // a_master_reset_outputs: During reset, master outputs must be low.
+    if (!PRESETn) begin
+        assert(PSEL == 0);    // a_master_reset_psel
+        assert(PENABLE == 0); // a_master_reset_penable
+        assert(PWRITE == 0);  // a_master_reset_pwrite
+        assert(PADDR == 0);   // a_master_reset_paddr
+        assert(PWDATA == 0);  // a_master_reset_pwdata
+        assert(PSTRB == 0);   // a_master_reset_pstrb
+        assert(PPROT == 0);   // a_master_reset_pprot
+    end
+
+    // --- Protocol and Behavior Checks (post-reset) ---
+    // All checks using $past must be guarded by f_past_valid.
+    if (f_past_valid) begin
+        // a_penable_requires_psel: PENABLE is high only if PSEL is high.
+        assert(!PENABLE || PSEL);
+
+        // a_write_only_in_access: The master should only signal PWRITE in ACCESS phase.
+        // The RTL violates this (asserts PWRITE in SETUP), which this check will find.
+        if (PSEL && PWRITE) begin
+            assert(PENABLE);
+        end
+
+        // a_addr_control_stable: Address/control signals are stable from SETUP to ACCESS.
+        if ($past(PSEL && !PENABLE)) begin
+            assert($stable(PADDR));
+            assert($stable(PWRITE));
+            assert($stable(PPROT));
+            assert($stable(PSTRB));
+            if ($past(PWRITE)) begin
+                assert($stable(PWDATA));
+            end
+        end
+
+        // a_pslverr_on_read_with_strb: Slave must signal error if PSTRB was non-zero for a read in SETUP.
+        if ($past(PSEL && !PENABLE && !PWRITE && PSTRB != 4'b0)) begin
+            assert(PSLVERR);
+        end
+
+        // a_no_pslverr_on_valid_setup: Slave must not signal error for valid transfers (write, or read with PSTRB=0).
+        if ($past(PSEL && !PENABLE && (PWRITE || PSTRB == 4'b0))) begin
+            assert(!PSLVERR);
+        end
+
+        // --- Cover Points ---
+        cover(PSEL && !PENABLE);  // c_setup_phase
+        cover(PSEL && PENABLE);   // c_access_phase
+        cover(PSEL && PENABLE && PWRITE && PREADY); // c_write_complete
+        cover(PSEL && PENABLE && !PWRITE && PREADY); // c_read_complete
+        cover($past(PSEL && PENABLE && PREADY) && (PSEL && !PENABLE)); // c_back_to_back
+        cover(PSLVERR && $past(!PWRITE && PSEL && !PENABLE)); // c_read_error
+        
+        // --- Data Integrity Checker ---
+        // Model Update: Update shadow model on a write to the watched address.
+        // The model implements the *intended* byte-strobe behavior.
+        if (PSEL && PWRITE && PADDR[9:0] == watched_addr) begin
+            expected_data <= {
+                (PSTRB[3] ? PWDATA[31:24] : expected_data[31:24]),
+                (PSTRB[2] ? PWDATA[23:16] : expected_data[23:16]),
+                (PSTRB[1] ? PWDATA[15:8]  : expected_data[15:8]),
+                (PSTRB[0] ? PWDATA[7:0]   : expected_data[7:0])
+            };
+            byte_valid <= byte_valid | PSTRB;
+            if (PSTRB == 4'b1111) begin
+                wrote_full_word <= 1'b1;
+            end
+        end
+
+        // Assertion: Check read data during a completed read access.
+        if (PSEL && PENABLE && !PWRITE && PREADY && PADDR[9:0] == watched_addr && !PSLVERR) begin
+            // a_data_integrity: Read data must match expected data for all known bytes.
+            assert((!byte_valid[0] || PRDATA[7:0]   == expected_data[7:0]) &&
+                   (!byte_valid[1] || PRDATA[15:8]  == expected_data[15:8]) &&
+                   (!byte_valid[2] || PRDATA[23:16] == expected_data[23:16]) &&
+                   (!byte_valid[3] || PRDATA[31:24] == expected_data[31:24]));
+            
+            // c_readback_known: Cover reading back a byte that we have written.
+            if (byte_valid != 4'b0) cover(1);
+        end
+
+        // c_partial_overwrite: Cover a partial write after a full write.
+        if (wrote_full_word && $past(PSEL && PENABLE && PWRITE && PREADY && PADDR[9:0] == watched_addr && PSTRB != 4'b1111 && PSTRB != 4'b0000)) begin
+            cover(1);
+        end
+    end
+end
+
+endmodule
+```

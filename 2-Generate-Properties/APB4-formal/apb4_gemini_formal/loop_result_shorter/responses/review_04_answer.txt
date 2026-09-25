@@ -1,0 +1,29 @@
+REVIEW_OK
+This review audits the provided `apb4_formal.sv` harness against the design brief before running BMC.
+
+1.  **Reset guards and $past history:** The harness correctly models a single-cycle, active-low reset on the first clock via `first_cycle` and `PRESETn`. History validity, tracked by `past_valid`, advances unconditionally after the first cycle and is used correctly to guard all `$past` constructs. Protocol checks are enclosed in `if (PRESETn)` or `if (past_PRESETn)` blocks, correctly preventing checks from firing on transactions initiated during reset. The reset-release cover is present and reachable.
+
+2.  **Clock timing:** The data integrity assertion for reads uses a registered flag, `saw_legal_read_setup_at_watched`, to identify a completed legal read. This flag is set at the end of the SETUP cycle, and the assertion fires at the end of the subsequent ACCESS cycle. This correctly aligns the check with the transaction. A detailed timing analysis for a back-to-back read scenario confirms that the checker correctly samples `PRDATA` before the slave can update it for the next transaction, even though the slave updates `PRDATA` in both SETUP and ACCESS phases. This is due to the non-blocking assignment (`<=`) in the slave and the preponed sampling time of the immediate assertion.
+
+    **Back-to-back Read A then Read B:**
+    | Cycle | Phase(s) | `PADDR` | `PRDATA` (start of cycle) | `saw_legal...` (start of cycle) | Actions @ `posedge PCLK` |
+    | :--- | :--- | :--- | :--- | :--- | :--- |
+    | N | SETUP A | addr_A | (Previous value) | `0` | Slave: `PRDATA <= data_A`. Harness: `saw_legal... <= 1`. |
+    | N+1 | ACCESS A, SETUP B | addr_B | `data_A` | `1` | Harness: `assert(PRDATA == expected_A)`. The assertion correctly samples `data_A`. Slave: `PRDATA <= data_B`. |
+    | N+2 | ACCESS B | (Next addr) | `data_B` | (Updated for B) | Harness: `assert(PRDATA == expected_B)`. |
+
+3.  **Scope:** The environment correctly constrains the requester's address input `SADDR` with `assume(SADDR < 32'd1024)`. The scoreboard and read-data checks are correctly gated by a full 32-bit address match (`PADDR == watched_addr`), preventing false positives from aliasing.
+
+4.  **Requirements:** The assertions map directly to requirements in the design brief:
+    *   `a_data_byteX`: Checks data integrity on legal reads against an independent model.
+    *   `a_illegal_read_slverr`: Checks for the mandatory error response on invalid reads (`PSTRB != 0`).
+    *   `a_prdata_stable_on_illegal_read`: Checks that an invalid read does not corrupt `PRDATA`. This is a reasonable check for unintended behavior and is not an invented requirement.
+    *   The harness correctly avoids creating assertions for non-required behavior, such as mandatory errors on zero-strobe writes.
+
+5.  **Data readback model:** The check is correctly limited to legal reads (`PSTRB==0`). The scoreboard model for writes correctly implements the byte-preservation requirement (`if (PSTRB[0]) expected_data[7:0] <= PWDATA[7:0]; ...`) and is independent of the slave's buggy `case (PSTRB)` implementation, making it effective for bug discovery.
+
+6.  **Assumptions:** All assumptions correctly constrain the environment or checker state (`SADDR`, `watched_addr`) and do not force DUT outputs or mask behavior that needs to be verified, such as illegal reads.
+
+7.  **Tautology and Reachability:** The properties are not tautological and compare DUT behavior against an independent specification. Associated `cover` statements confirm that the trigger conditions for all assertions are reachable within the specified depth.
+
+The harness is sound and addresses the verification goals. No fixes are required.

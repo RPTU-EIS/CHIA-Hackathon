@@ -1,0 +1,33 @@
+REVIEW_OK
+
+The current harness and properties are well-formed and correctly aligned with the design brief. They are ready for BMC.
+
+### Assertion Audit
+
+1.  **`a_data_byte[0-3]` (Data Integrity on Legal Read)**
+    *   **Requirement:** This set of assertions verifies the core data integrity requirement for legal reads. It implements the scoreboard model specified in the brief: "check reads/byte writes with an independent model," ensuring that "unselected bytes must be preserved" during writes. It also correctly limits checks to "read data only after known writes" by using the `known_bytes` register and gates the check to legal reads ("PWRITE=0, PSTRB=0000").
+    *   **Reset & History:** The check is inside the main `else` block, which executes only when `PRESETn` is high. The trigger condition, `read_complete && saw_legal_read_setup_at_watched`, requires a multi-cycle APB transaction that cannot start during reset, implicitly ensuring the system is in a normal operating state (`PRESETn` and `past_PRESETn` are high). The scoreboard state (`known_bytes`, `saw_legal_read_setup_at_watched`) is correctly reset.
+    *   **Scope:** The check is correctly gated by `at_watched_addr`, which compares the full 32-bit `PADDR`. The environment is correctly constrained via `assume(SADDR < 1024)`.
+    *   **Scoreboard Model:** The `expected_data` model correctly implements byte-enables for writes, preserving unwritten bytes. This model is independent of the slave's flawed `case` statement, enabling bug discovery.
+    *   **Timing:** The assertion correctly triggers on the ACCESS cycle of a read, checking `PRDATA` which the slave updates on the clock edge between the SETUP and ACCESS phases. This timing is robust for back-to-back operations. The use of the registered flag `saw_legal_read_setup_at_watched` correctly correlates the ACCESS phase with its preceding SETUP phase.
+
+2.  **`a_illegal_read_slverr` (Error on Illegal Read)**
+    *   **Requirement:** This assertion verifies the requirement that "A read with nonzero PSTRB is invalid: check its error response separately".
+    *   **Reset & History:** The check uses `$past()` guarded by `past_valid`, correctly looking at the previous cycle's conditions. As with the data assertion, the trigger condition (`$past(is_setup...)`) can only be true when the system is out of reset.
+    *   **Timing:** The assertion triggers on the ACCESS cycle (`$past(is_setup)` is true), which is one cycle after the illegal read SETUP. This correctly aligns with the APB protocol, where `PSLVERR` is valid with `PREADY` during the ACCESS phase. The slave RTL updates `PSLVERR` on the clock edge following the SETUP condition, so the check inspects the value at the correct time.
+    *   **Covers:** The corresponding covers (`c_read_after_write`, `c_illegal_read_setup`) confirm that the trigger conditions for both assertions are reachable.
+
+### Back-to-Back Read Timing Analysis
+
+This table demonstrates that the data integrity checker correctly handles back-to-back reads, a critical scenario given the slave's behavior of updating `PRDATA` during the SETUP phase.
+
+Scenario: Read A from `watched_addr`, immediately followed by Read B from a different address.
+
+| Cycle | Phase         | PADDR | PSEL / PENABLE | PRDATA (at posedge) | `saw_legal_read_setup_at_watched` (at posedge) | Trigger (`read_complete` && `saw...`) | Assertion |
+|-------|---------------|-------|----------------|---------------------|----------------------------------------------------|---------------------------------------|-----------|
+| T0    | SETUP Read A  | addrA | 1 / 0          | (previous value)    | 0 -> 1                                             | false                                 | (no check)|
+| T1    | ACCESS Read A | addrA | 1 / 1          | Data from addrA     | 1 -> 0 (as next state is SETUP B)                  | **true**                              | **`assert(PRDATA == expected_A)` fires. Correct.** |
+| T2    | SETUP Read B  | addrB | 1 / 0          | Data from addrB     | 0 -> 0 (since `addrB != watched_addr`)             | false                                 | (no check)|
+| T3    | ACCESS Read B | addrB | 1 / 1          | Data from addrB     | 0 -> 0                                             | false                                 | (no check)|
+
+The assertion for Read A correctly fires and checks `PRDATA` during cycle T1, before the value is overwritten with data from Read B at the start of cycle T2. The checker logic is sound.
